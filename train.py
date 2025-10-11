@@ -13,8 +13,6 @@ import matplotlib.pyplot as plt
 # Configuration
 IMG_SIZE = 512
 BATCH_SIZE = 4
-DATA_DIR = "data/front_flipped"  # Update this to your local data directory
-MEMORY_BANK_PATH = "patchcore_memory_bank.pth"
 CORESET_SAMPLING_RATIO = 0.7  # Note: This ratio is high; consider lowering to 0.01-0.1 for typical PatchCore usage
 PATCH_SIZE = 4  # Not used in code, but kept for reference
 
@@ -91,7 +89,7 @@ class PatchCore(nn.Module):
         return self.extract_features(x)
 
 # Train PatchCore
-def train_patchcore(data_dir):
+def train_patchcore(data_dir, memory_bank_path):
     """Train PatchCore by building a memory bank of normal patch features."""
     transform = transforms.Compose([
         transforms.Resize((IMG_SIZE, IMG_SIZE)),
@@ -121,8 +119,8 @@ def train_patchcore(data_dir):
 
     print("Performing coreset sampling...")
     model.coreset_sampling()
-    torch.save(model.memory_bank, MEMORY_BANK_PATH)
-    print(f"Memory bank saved to {MEMORY_BANK_PATH}")
+    torch.save(model.memory_bank, memory_bank_path)
+    print(f"Memory bank saved to {memory_bank_path}")
 
     # Visualize a sample image
     sample_img = dataset[0]
@@ -133,6 +131,3 @@ def train_patchcore(data_dir):
     plt.title("Sample Training Image")
     plt.axis('off')
     plt.show()
-
-if __name__ == "__main__":
-    train_patchcore(DATA_DIR)

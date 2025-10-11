@@ -16,8 +16,6 @@ IMG_SIZE = 512
 ANOMALY_THRESHOLD = 3.9  # Fixed threshold for raw anomaly scores
 MIN_CONTOUR_AREA = 20  # Increased to filter noise
 MAX_ASPECT_RATIO = 10.0  # Filter elongated contours
-MEMORY_BANK_PATH = "patchcore_memory_bank.pth"
-TEST_IMAGE = "data/faulty/front_flipped.JPG"  # Update this to your local test image path
 
 # PatchCore Model
 class PatchCore(nn.Module):
@@ -61,7 +59,7 @@ class PatchCore(nn.Module):
         return self.extract_features(x)
 
 # Detect Anomalies
-def detect_anomalies(image_path, memory_bank_path=MEMORY_BANK_PATH):
+def detect_anomalies(image_path, memory_bank_path):
     """Detect anomalies in the defective image, draw bounding boxes on original image, and save checkpoint results."""
     model = PatchCore()
     model.memory_bank = torch.load(memory_bank_path)
@@ -224,6 +222,3 @@ def detect_anomalies(image_path, memory_bank_path=MEMORY_BANK_PATH):
     print(f"Result summary saved to {output_result_path}")
 
     return result_img
-
-if __name__ == "__main__":
-    result_img = detect_anomalies(TEST_IMAGE)
