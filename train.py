@@ -1,133 +1,107 @@
-# train.py
+# train.py — builds PatchCore memory bank (training phase)
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import DataLoader, Dataset
 import torchvision.transforms as transforms
-import torchvision.models as models
+from torchvision.models import wide_resnet50_2, Wide_ResNet50_2_Weights
 from PIL import Image
-import os
+from pathlib import Path
 import numpy as np
-import matplotlib.pyplot as plt
+from tqdm import tqdm
 
-# Configuration
+# --------------------------------------------------------------
+# CONFIG
+# --------------------------------------------------------------
 IMG_SIZE = 512
+CORESET_CAP = 60000       # maximum patches to keep in memory bank
 BATCH_SIZE = 4
-CORESET_SAMPLING_RATIO = 0.7  # Note: This ratio is high; consider lowering to 0.01-0.1 for typical PatchCore usage
-PATCH_SIZE = 4  # Not used in code, but kept for reference
 
-# Custom Dataset
-class PerfectPartsDataset(Dataset):
-    """Dataset for loading preprocessed images."""
-    def __init__(self, root_dir, transform=None):
-        self.root_dir = root_dir
-        self.transform = transform
-        self.image_paths = []
-        for root, _, files in os.walk(root_dir):
-            for f in files:
-                if f.lower().endswith(('.jpg', '.png', '.jpeg')):
-                    self.image_paths.append(os.path.join(root, f))
-        if not self.image_paths:
-            raise ValueError(f"No .jpg, .png, or .jpeg images found in {root_dir} or its subdirectories.")
-        print(f"Loaded {len(self.image_paths)} images from {root_dir}")
-
-    def __len__(self):
-        return len(self.image_paths)
-
-    def __getitem__(self, idx):
-        img_path = self.image_paths[idx]
-        try:
-            image = Image.open(img_path).convert("RGB")
-            if self.transform:
-                image = self.transform(image)
-            return image
-        except Exception as e:
-            raise ValueError(f"Error loading {img_path}: {e}")
-
-# PatchCore Model
-class PatchCore(nn.Module):
-    """PatchCore model for anomaly detection with patch-wise feature extraction."""
-    def __init__(self, backbone_name="wide_resnet50_2"):
-        super(PatchCore, self).__init__()
-        self.backbone = models.__dict__[backbone_name](weights="IMAGENET1K_V1")
+# --------------------------------------------------------------
+# PATCHCORE TRAINER
+# --------------------------------------------------------------
+class PatchCoreTrainer(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.backbone = wide_resnet50_2(weights=Wide_ResNet50_2_Weights.IMAGENET1K_V1)
         self.backbone.eval()
-        for param in self.backbone.parameters():
-            param.requires_grad = False
+        for p in self.backbone.parameters():
+            p.requires_grad = False
         self.layer2 = nn.Sequential(*list(self.backbone.children())[:6])
         self.layer3 = nn.Sequential(*list(self.backbone.children())[:7])
-        self.memory_bank = []
 
+    @torch.no_grad()
     def extract_features(self, x):
-        x2 = self.layer2(x)  # Shape: [batch_size, 512, 64, 64]
-        x3 = self.layer3(x)  # Shape: [batch_size, 1024, 32, 32]
-        print(f"layer2 shape: {x2.shape}, layer3 shape: {x3.shape}")
+        """Return [B,4096,1536] patch embeddings"""
+        x2 = self.layer2(x)
+        x3 = self.layer3(x)
         x3 = F.interpolate(x3, size=x2.shape[2:], mode='bilinear', align_corners=False)
-        features = []
+        feats = []
         for feat in [x2, x3]:
             b, c, h, w = feat.shape
-            feat = feat.view(b, c, h * w).permute(0, 2, 1)
-            features.append(feat)
-        return torch.cat(features, dim=2)  # [batch_size, 4096, 1536]
+            feat = feat.view(b, c, h*w).permute(0, 2, 1)
+            feats.append(feat)
+        return torch.cat(feats, dim=2)
 
-    def add_to_memory_bank(self, features):
-        self.memory_bank.append(features.detach().cpu())
-
-    def coreset_sampling(self):
-        if not self.memory_bank:
-            return
-        memory_bank = torch.cat(self.memory_bank, dim=0)
-        # Fix: Flatten to patch level for proper coreset sampling (common in PatchCore)
-        # Original code sampled images; this samples patches for better representation
-        memory_bank = memory_bank.view(-1, memory_bank.size(-1))  # [num_images * 4096, 1536]
-        print(f"Memory bank size before sampling: {memory_bank.shape}")
-        num_samples = max(1, int(CORESET_SAMPLING_RATIO * memory_bank.shape[0]))
-        indices = torch.randperm(memory_bank.shape[0])[:num_samples]
-        self.memory_bank = memory_bank[indices]
-        print(f"Memory bank size after sampling: {self.memory_bank.shape}")
-
-    def forward(self, x):
-        return self.extract_features(x)
-
-# Train PatchCore
-def train_patchcore(data_dir, memory_bank_path):
-    """Train PatchCore by building a memory bank of normal patch features."""
+# --------------------------------------------------------------
+# TRAIN FUNCTION
+# --------------------------------------------------------------
+def train_patchcore(good_dir, memory_bank_path):
+    """
+    Builds a PatchCore memory bank from all good images.
+    Args:
+        good_dir (str): path to good images directory
+        memory_bank_path (str): output .pth file
+    """
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    trainer = PatchCoreTrainer().to(device)
     transform = transforms.Compose([
         transforms.Resize((IMG_SIZE, IMG_SIZE)),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        transforms.Normalize([0.485, 0.456, 0.406],
+                             [0.229, 0.224, 0.225]),
     ])
 
-    try:
-        dataset = PerfectPartsDataset(root_dir=data_dir, transform=transform)
-    except ValueError as e:
-        print(f"Error: {e}")
-        raise
+    img_paths = list(Path(good_dir).glob("*.jpg")) + \
+                list(Path(good_dir).glob("*.png")) + \
+                list(Path(good_dir).glob("*.jpeg"))
+    print(f"Loaded {len(img_paths)} good images from {good_dir}")
+    if len(img_paths) == 0:
+        raise RuntimeError("No good images found!")
 
-    dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False, drop_last=False)
+    all_feats = []
+    with torch.no_grad():
+        for i in tqdm(range(0, len(img_paths), BATCH_SIZE)):
+            batch_files = img_paths[i:i+BATCH_SIZE]
+            batch_imgs = []
+            for f in batch_files:
+                img = Image.open(f).convert("RGB")
+                batch_imgs.append(transform(img))
+            batch_tensor = torch.stack(batch_imgs).to(device)
+            feats = trainer.extract_features(batch_tensor)  # [B,4096,1536]
+            all_feats.append(feats.cpu())
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = PatchCore().to(device)
-    model.eval()
+    all_feats = torch.cat(all_feats, dim=0)  # [N,4096,1536]
+    n_patches = all_feats.shape[0] * all_feats.shape[1]
+    print(f"Building streaming coreset on cpu... total patches: {n_patches:,}")
 
-    print("Extracting patch features for memory bank...")
-    for i, batch in enumerate(dataloader):
-        batch = batch.to(device)
-        with torch.no_grad():
-            features = model.extract_features(batch)
-        model.add_to_memory_bank(features)
-        print(f"Processed batch {i+1}/{len(dataloader)}, features shape: {features.shape}")
+    # Flatten
+    all_feats = all_feats.view(-1, all_feats.shape[-1])
+    all_feats = all_feats.half()  # save space
 
-    print("Performing coreset sampling...")
-    model.coreset_sampling()
-    torch.save(model.memory_bank, memory_bank_path)
-    print(f"Memory bank saved to {memory_bank_path}")
+    # Randomly sample up to CORESET_CAP
+    if all_feats.shape[0] > CORESET_CAP:
+        idx = torch.randperm(all_feats.shape[0])[:CORESET_CAP]
+        all_feats = all_feats[idx]
 
-    # Visualize a sample image
-    sample_img = dataset[0]
-    sample_img_np = sample_img.permute(1, 2, 0).numpy()
-    sample_img_np = (sample_img_np * np.array([0.229, 0.224, 0.225]) + np.array([0.485, 0.456, 0.406])).clip(0, 1)
-    plt.figure(figsize=(10, 5))
-    plt.imshow(sample_img_np)
-    plt.title("Sample Training Image")
-    plt.axis('off')
-    plt.show()
+    print(f"Final memory bank shape: {tuple(all_feats.shape)} (dtype={all_feats.dtype})")
+    torch.save(all_feats, memory_bank_path)
+    print(f"Memory bank saved to: {memory_bank_path}")
+    return memory_bank_path
+
+# --------------------------------------------------------------
+if __name__ == "__main__":
+    # example usage
+    train_patchcore(
+        good_dir="d:/fyp/aesthetic-fault-detection/Updated Dataset/acpart2/0º/back/good",
+        memory_bank_path="d:/fyp/aesthetic-fault-detection/models/patchcore_0º_back.pth"
+    )
