@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <task>
+      <id>1734619</id>
+      <name>45-front-bad-bad3</name>
+      <size>15</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2025-10-29 22:57:49.681103+00:00</created>
+      <updated>2025-10-29 23:24:16.703759+00:00</updated>
+      <subset>default</subset>
+      <start_frame>0</start_frame>
+      <stop_frame>14</stop_frame>
+      <frame_filter></frame_filter>
+      <segments>
+        <segment>
+          <id>3189947</id>
+          <start>0</start>
+          <stop>14</stop>
+          <url>https://app.cvat.ai/api/jobs/3188542</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>soomromubi</username>
+        <email>soomromubi@gmail.com</email>
+      </owner>
+      <assignee></assignee>
+      <labels>
+        <label>
+          <name>anomaly</name>
+          <color>#adfbf2</color>
+          <type>any</type>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+    </task>
+    <dumped>2025-11-10 17:29:55.914847+00:00</dumped>
+  </meta>
+  <image id="0" name="1.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="3171.45" ytl="985.10" xbr="3327.83" ybr="1010.83" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2876.50" ytl="1254.31" xbr="3052.68" ybr="1289.94" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1685.07" ytl="1257.91" xbr="1747.92" ybr="1263.32" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1676.93" ytl="1309.74" xbr="1762.05" ybr="1325.57" z_order="0">
+    </box>
+  </image>
+  <image id="1" name="10.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="1422.83" ytl="1020.26" xbr="1507.51" ybr="1032.61" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2620.67" ytl="939.11" xbr="2791.79" ybr="967.34" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2908.22" ytl="660.38" xbr="3068.75" ybr="688.61" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1425.64" ytl="969.67" xbr="1489.33" ybr="975.03" z_order="0">
+    </box>
+  </image>
+  <image id="2" name="11.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="2725.51" ytl="948.60" xbr="2897.29" ybr="976.57" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1530.03" ytl="1023.73" xbr="1609.76" ybr="1034.47" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1531.73" ytl="971.71" xbr="1595.62" ybr="977.36" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="3017.91" ytl="677.56" xbr="3179.07" ybr="707.04" z_order="0">
+    </box>
+  </image>
+  <image id="3" name="12.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="1217.72" ytl="1389.09" xbr="1302.00" ybr="1404.54" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2695.61" ytl="1053.28" xbr="2947.50" ybr="1080.01" z_order="0">
+    </box>
+  </image>
+  <image id="4" name="13.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="2872.78" ytl="1027.33" xbr="3124.10" ybr="1046.10" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1385.40" ytl="1338.90" xbr="1471.90" ybr="1351.70" z_order="0">
+    </box>
+  </image>
+  <image id="5" name="14.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="2952.55" ytl="1060.18" xbr="3223.30" ybr="1083.64" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1465.53" ytl="1362.94" xbr="1554.31" ybr="1378.72" z_order="0">
+    </box>
+  </image>
+  <image id="6" name="15.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="2865.88" ytl="1142.74" xbr="3104.20" ybr="1165.02" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1383.00" ytl="1456.43" xbr="1467.66" ybr="1471.58" z_order="0">
+    </box>
+  </image>
+  <image id="7" name="2.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="2717.57" ytl="1074.46" xbr="2970.44" ybr="1102.84" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2524.05" ytl="1347.97" xbr="2691.77" ybr="1373.77" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1326.28" ytl="1435.84" xbr="1406.79" ybr="1448.90" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1327.06" ytl="1385.48" xbr="1393.36" ybr="1390.77" z_order="0">
+    </box>
+  </image>
+  <image id="8" name="3.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="2669.21" ytl="1034.26" xbr="2916.37" ybr="1054.03" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2477.13" ytl="1304.02" xbr="2646.61" ybr="1330.85" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1284.11" ytl="1345.58" xbr="1350.31" ybr="1351.88" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1281.74" ytl="1399.17" xbr="1365.28" ybr="1409.41" z_order="0">
+    </box>
+  </image>
+  <image id="9" name="4.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="1231.42" ytl="1332.27" xbr="1310.52" ybr="1344.98" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2424.87" ytl="1236.20" xbr="2595.77" ybr="1261.65" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2618.36" ytl="959.40" xbr="2866.94" ybr="983.41" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1232.92" ytl="1279.64" xbr="1296.92" ybr="1286.07" z_order="0">
+    </box>
+  </image>
+  <image id="10" name="5.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="1176.73" ytl="1261.93" xbr="1260.76" ybr="1275.80" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1179.99" ytl="1208.18" xbr="1249.08" ybr="1215.60" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2375.83" ytl="1159.85" xbr="2545.92" ybr="1187.01" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2567.37" ytl="882.55" xbr="2811.79" ybr="911.13" z_order="0">
+    </box>
+  </image>
+  <image id="11" name="6.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="2570.22" ytl="798.21" xbr="2816.08" ybr="828.23" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2380.12" ytl="1076.94" xbr="2550.21" ybr="1109.82" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1186.59" ytl="1181.96" xbr="1267.28" ybr="1192.50" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1185.67" ytl="1127.86" xbr="1251.24" ybr="1133.36" z_order="0">
+    </box>
+  </image>
+  <image id="12" name="7.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="1227.40" ytl="1106.77" xbr="1306.72" ybr="1118.23" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1226.99" ytl="1053.58" xbr="1293.82" ybr="1062.06" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2613.41" ytl="729.92" xbr="2863.38" ybr="758.54" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2424.51" ytl="1005.30" xbr="2590.52" ybr="1031.90" z_order="0">
+    </box>
+  </image>
+  <image id="13" name="8.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="2480.83" ytl="958.24" xbr="2652.00" ybr="984.78" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1285.05" ytl="1054.11" xbr="1365.51" ybr="1066.95" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1284.19" ytl="1000.18" xbr="1350.10" ybr="1007.03" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2669.14" ytl="681.80" xbr="2917.37" ybr="705.73" z_order="0">
+    </box>
+  </image>
+  <image id="14" name="9.JPG" width="4240" height="2400">
+    <box label="anomaly" source="manual" occluded="0" xtl="1346.19" ytl="976.00" xbr="1407.40" ybr="980.52" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="1346.29" ytl="1028.37" xbr="1422.71" ybr="1037.57" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2540.75" ytl="936.00" xbr="2709.37" ybr="962.52" z_order="0">
+    </box>
+    <box label="anomaly" source="manual" occluded="0" xtl="2736.76" ytl="662.08" xbr="2980.71" ybr="685.19" z_order="0">
+    </box>
+  </image>
+</annotations>
