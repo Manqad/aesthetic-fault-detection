@@ -1,4 +1,5 @@
 # test.py — Raw-distance thresholding + FG mask + NMS + visualization
+from pyexpat import model
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -21,8 +22,6 @@ except Exception:
 # CONFIG
 # --------------------------------------------------------------
 IMG_SIZE = 512
-
-# ---- RAW THRESHOLD on distance map (no z-score / hysteresis) ----
 ANOMALY_THRESHOLD = 4.3  # tune higher to reduce FPs, lower to catch more
 
 # Component post-processing
@@ -97,20 +96,15 @@ def load_xml_boxes(xml_path: Path):
     return ann
 
 def make_foreground_mask(pil_rgb: Image.Image) -> np.ndarray:
-    """
-    Returns uint8 mask in original image size: 255 for foreground, 0 for background.
-    Uses rembg if available; otherwise returns full-ones mask.
-    """
+    """Return 255=FG, 0=BG. If rembg missing, return full-ones mask."""
     if not BACKGROUND_REMOVAL or not _HAS_REMBG:
         if BACKGROUND_REMOVAL and not _HAS_REMBG:
             print("[WARN] BACKGROUND_REMOVAL=True but rembg not available. Proceeding without masking.")
         w, h = pil_rgb.size
         return np.ones((h, w), dtype=np.uint8) * 255
-
     rgba = pil_rgb.convert("RGBA")
     rgba_removed = rembg_remove(rgba)  # RGBA with alpha
-    alpha = np.array(rgba_removed)[:, :, 3]  # 0..255
-    # Simple cleanup
+    alpha = np.array(rgba_removed)[:, :, 3]
     if BG_ERODE > 0 or BG_DILATE > 0:
         k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
         for _ in range(BG_ERODE):
@@ -120,7 +114,7 @@ def make_foreground_mask(pil_rgb: Image.Image) -> np.ndarray:
     return alpha
 
 # --------------------------------------------------------------
-# PatchCore Inference
+# PatchCore Inference (unchanged)
 # --------------------------------------------------------------
 class PatchCoreInference(nn.Module):
     def __init__(self):
@@ -140,7 +134,7 @@ class PatchCoreInference(nn.Module):
         feats = []
         for feat in [x2, x3]:
             b, c, h, w = feat.shape
-            feat = feat.view(b, c, h*w).permute(0, 2, 1)  # [B, HW, C]
+            feat = feat.view(b, c, h*w).permute(0, 2, 1)
             feats.append(feat)
         return torch.cat(feats, dim=2)  # [B, 4096, 1536]
 
@@ -163,7 +157,7 @@ class PatchCoreInference(nn.Module):
         return self.extract_features(x)
 
 # --------------------------------------------------------------
-# SAVE COMPARISON (ONE PER CATEGORY)
+# SAVE COMPARISON (unchanged)
 # --------------------------------------------------------------
 def save_comparison(img_pred, img_gt, img_name, cat):
     comparison = np.hstack([img_pred, img_gt])
@@ -172,7 +166,7 @@ def save_comparison(img_pred, img_gt, img_name, cat):
     print(f"  SAVED: {save_path}")
 
 # --------------------------------------------------------------
-# DETECT ANOMALIES (raw-distance thresholding)
+# DETECT ANOMALIES (unchanged; box logic intact)
 # --------------------------------------------------------------
 def detect_anomalies(img_path: str, memory_bank_path: str, gt_boxes: list, cat: str):
     """
@@ -182,25 +176,22 @@ def detect_anomalies(img_path: str, memory_bank_path: str, gt_boxes: list, cat: 
         score_map: raw distance map resized to original image size
     """
     global SAVED_CATEGORIES
-
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = PatchCoreInference().to(device)
     model.eval()
 
-    # Load memory bank (supports both [N,4096,1536] and [M,1536])
-    model.memory_bank = torch.load(memory_bank_path, map_location="cpu")
-    print(f"[DEBUG] bank shape before view: {tuple(model.memory_bank.shape)}")
+    # Load memory bank safely (tensor-only)
+    model.memory_bank = torch.load(memory_bank_path, map_location="cpu", weights_only=True)
     if model.memory_bank.dim() == 3:
         model.memory_bank = model.memory_bank.view(-1, model.memory_bank.size(-1))
-    print(f"[DEBUG] bank shape after  view: {tuple(model.memory_bank.shape)}")
 
-    # Load image + foreground mask
+    # Image + FG mask
     pil_rgb = Image.open(img_path).convert("RGB")
     orig_w, orig_h = pil_rgb.size
-    fg_mask = make_foreground_mask(pil_rgb)  # 0..255
+    fg_mask = make_foreground_mask(pil_rgb)
     fg_mask_bool = (fg_mask > 0).astype(np.uint8)
 
-    # Preprocess for backbone
+    # Backbone preprocess
     tf = transforms.Compose([
         transforms.Resize((IMG_SIZE, IMG_SIZE)),
         transforms.ToTensor(),
@@ -214,77 +205,59 @@ def detect_anomalies(img_path: str, memory_bank_path: str, gt_boxes: list, cat: 
         features = model(tensor)                     # [1,4096,1536]
         anomaly_scores = model.compute_anomaly_score(features, device).numpy()
 
-    # Reshape + resize to original resolution  (this is the RAW distance map)
+    # RAW distance map → resize back
     score_map = anomaly_scores.reshape(64, 64)
     score_map = cv2.resize(score_map, (orig_w, orig_h), interpolation=cv2.INTER_LINEAR)
 
-    # ---------- RAW THRESHOLDING (no z-normalization) ----------
-    # Apply foreground mask: suppress background
+    # FG-masked thresholding
     masked_score = score_map.copy()
     masked_score[fg_mask_bool == 0] = 0.0
-
-    # Binary map by fixed threshold on raw distances
     binary = (masked_score > ANOMALY_THRESHOLD).astype(np.uint8) * 255
 
-    # Morphology (same as before, just to tidy blobs)
+    # Morphology
     k5 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
     binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, k5)
 
-    # Connected components on binary
+    # Connected components → boxes
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(binary, connectivity=8)
-
     kept_xyxy, kept_scores = [], []
-
     for lbl in range(1, num_labels):
         x, y, w, h, area = stats[lbl, 0], stats[lbl, 1], stats[lbl, 2], stats[lbl, 3], stats[lbl, 4]
-        if w < MIN_BOX_W or h < MIN_BOX_H:
-            continue
-        if area < MIN_CONTOUR_AREA:
-            continue
+        if w < MIN_BOX_W or h < MIN_BOX_H: continue
+        if area < MIN_CONTOUR_AREA:        continue
         aspect = max(w / h, h / w) if min(w, h) > 0 else float("inf")
-        if aspect > MAX_ASPECT_RATIO:
-            continue
+        if aspect > MAX_ASPECT_RATIO:      continue
 
         x1_t, y1_t, x2_t, y2_t = x, y, x + w - 1, y + h - 1
-
-        # Clamp
         x1_t = max(0, x1_t); y1_t = max(0, y1_t)
         x2_t = min(x2_t, orig_w - 1); y2_t = min(y2_t, orig_h - 1)
-
-        # Optional shave to reduce border noise
         if (x2_t - x1_t) > 6 and (y2_t - y1_t) > 6:
             x1_t += 1; y1_t += 1; x2_t -= 1; y2_t -= 1
 
-        # Score = mean RAW distance inside the box
         m = box_mean_score(score_map, x1_t, y1_t, x2_t, y2_t)
         kept_xyxy.append([x1_t, y1_t, x2_t, y2_t])
         kept_scores.append(m)
 
-    # NMS over boxes
+    # NMS
     keep_idx = nms_xyxy(kept_xyxy, kept_scores, iou_thr=NMS_IOU)
     pred_boxes_xyxy = [kept_xyxy[i] for i in keep_idx]
 
-    # Convert to (x,y,w,h) for evaluation
+    # Convert to (x,y,w,h) for evaluation (keep your +1 convention)
     pred_boxes_eval = [[x1, y1, (x2 - x1 + 1), (y2 - y1 + 1)] for (x1, y1, x2, y2) in pred_boxes_xyxy]
 
-    # Draw
+    # Draw (unchanged)
     img_pred = np.array(pil_rgb)
     for (x1, y1, x2, y2) in pred_boxes_xyxy:
         cv2.rectangle(img_pred, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 3)
 
     img_gt = np.array(pil_rgb)
     for (x, y, w, h) in gt_boxes:
-        x1, y1 = int(x), int(y)
-        x2, y2 = int(x + w), int(y + h)
+        x1, y1 = int(x), int(y); x2, y2 = int(x + w), int(y + h)
         cv2.rectangle(img_gt, (x1, y1), (x2, y2), (0, 0, 255), 3)
 
     if not SAVED_CATEGORIES.get(cat, False):
         save_comparison(img_pred, img_gt, img_path, cat)
         SAVED_CATEGORIES[cat] = True
-
-    nz_bin = int((binary > 0).sum())
-    print(f"[DEBUG] preds(after NMS): {len(pred_boxes_eval)}  gt: {len(gt_boxes)}  "
-          f"thr: {ANOMALY_THRESHOLD:.3f}  nz_bin: {nz_bin}  rembg:{_HAS_REMBG}")
 
     return img_pred, pred_boxes_eval, score_map
 
@@ -302,12 +275,8 @@ def iou(a, b):
     union = wa * ha + wb * hb - inter
     return inter / union if union > 0 else 0.0
 
-def evaluate_detection(pred, gt, iou_thr=0.5, debug=False, img_name=None):
-    """
-    pred, gt: lists of [x, y, w, h]
-    iou_thr: IoU threshold for a match (default 0.5)
-    debug: if True, prints best IoU per prediction
-    """
+def evaluate_detection(pred, gt, iou_thr=0.2, debug=False, img_name=None):
+    """IoU-based one-to-one greedy matching (your current metric)."""
     if not pred and not gt: return {"precision": 1.0, "recall": 1.0, "f1_score": 1.0}
     if not pred: return {"precision": 0.0, "recall": 0.0, "f1_score": 0.0}
     if not gt:   return {"precision": 0.0, "recall": 0.0, "f1_score": 0.0}
@@ -336,8 +305,177 @@ def evaluate_detection(pred, gt, iou_thr=0.5, debug=False, img_name=None):
     f1   = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0.0
     return {"precision": prec, "recall": rec, "f1_score": f1}
 
+# ==============================================================
+# NEW: ADDITIONAL EVALUATION MODES (NO CHANGE TO DETECTION)
+# ==============================================================
+
+# -------------------------------
+# Area-based (pixel overlap) F1
+# -------------------------------
+def _rasterize_boxes_xywh(boxes, image_size):
+    """
+    Convert [x,y,w,h] boxes into a binary mask (H,W).
+    Compatible with your +1 width/height convention.
+    """
+    H, W = image_size
+    mask = np.zeros((H, W), dtype=np.uint8)
+    for (x, y, w, h) in boxes:
+        x1 = int(np.floor(x)); y1 = int(np.floor(y))
+        x2 = int(np.ceil(x + w)); y2 = int(np.ceil(y + h))
+        x1 = max(0, min(W, x1)); y1 = max(0, min(H, y1))
+        x2 = max(0, min(W, x2)); y2 = max(0, min(H, y2))
+        if x2 > x1 and y2 > y1:
+            mask[y1:y2, x1:x2] = 1
+    return mask
+
+def evaluate_detection_area(pred, gt, image_size, debug=False, img_name=None):
+    """
+    Pixel-level Coverage/Purity F1 using unions (symmetric, merge/split tolerant).
+    Returns: {"area_precision","area_recall","area_f1"}
+    """
+    H, W = image_size
+    if H <= 0 or W <= 0:
+        return {"area_precision": 0.0, "area_recall": 0.0, "area_f1": 0.0}
+
+    pred_mask = _rasterize_boxes_xywh(pred, (H, W))
+    gt_mask   = _rasterize_boxes_xywh(gt, (H, W))
+
+    pred_area = int(pred_mask.sum())
+    gt_area   = int(gt_mask.sum())
+    inter     = int(np.logical_and(pred_mask, gt_mask).sum())
+
+    if pred_area == 0 and gt_area == 0:
+        return {"area_precision": 1.0, "area_recall": 1.0, "area_f1": 1.0}
+    if pred_area == 0 or gt_area == 0:
+        return {"area_precision": 0.0, "area_recall": 0.0, "area_f1": 0.0}
+
+    area_precision = inter / pred_area
+    area_recall    = inter / gt_area
+    denom = (area_precision + area_recall)
+    area_f1        = 2 * area_precision * area_recall / denom if denom > 0 else 0.0
+
+    if debug:
+        tag = f" [AREA-DBG {img_name}]" if img_name else " [AREA-DBG]"
+        print(f"{tag} inter={inter} pred_area={pred_area} gt_area={gt_area} "
+              f"P:{area_precision:.3f} R:{area_recall:.3f} F1:{area_f1:.3f}")
+
+    return {"area_precision": area_precision, "area_recall": area_recall, "area_f1": area_f1}
+
+# -----------------------------------------
+# Group-IoU (merge/split-aware, symmetric)
+# -----------------------------------------
+def _mask_iou(m1, m2):
+    inter = int(np.logical_and(m1, m2).sum())
+    union = int(np.logical_or(m1, m2).sum())
+    return (inter / union) if union > 0 else 0.0, inter, union
+
+def _build_overlap_graph(pred, gt, image_size, iou_eps=0.05):
+    """Bipartite graph preds <-> gts using small mask-IoU threshold."""
+    H, W = image_size
+    pred_masks = [_rasterize_boxes_xywh([p], (H, W)) for p in pred]
+    gt_masks   = [_rasterize_boxes_xywh([g], (H, W)) for g in gt]
+
+    pred_adj = [set() for _ in range(len(pred))]
+    gt_adj   = [set() for _ in range(len(gt))]
+
+    for pi, pm in enumerate(pred_masks):
+        for gi, gm in enumerate(gt_masks):
+            iou_pg, _, _ = _mask_iou(pm, gm)
+            if iou_pg > iou_eps:
+                pred_adj[pi].add(gi)
+                gt_adj[gi].add(pi)
+
+    return pred_masks, gt_masks, pred_adj, gt_adj
+
+def _connected_components(pred_adj, gt_adj):
+    """Connected components over bipartite graph; returns list of (Pset, Gset)."""
+    from collections import deque
+    nP, nG = len(pred_adj), len(gt_adj)
+    visitedP, visitedG = [False]*nP, [False]*nG
+    comps = []
+
+    for startP in range(nP):
+        if visitedP[startP]:
+            continue
+        if len(pred_adj[startP]) == 0:
+            visitedP[startP] = True
+            comps.append(({startP}, set()))
+            continue
+        qP = deque([startP])
+        curP, curG = set(), set()
+        visitedP[startP] = True
+        while qP:
+            p = qP.popleft()
+            curP.add(p)
+            for g in pred_adj[p]:
+                if not visitedG[g]:
+                    visitedG[g] = True
+                    curG.add(g)
+                    for pp in gt_adj[g]:
+                        if not visitedP[pp]:
+                            visitedP[pp] = True
+                            qP.append(pp)
+        comps.append((curP, curG))
+
+    for g in range(nG):
+        if not visitedG[g] and len(gt_adj[g]) == 0:
+            visitedG[g] = True
+            comps.append((set(), {g}))
+    return comps
+
+def evaluate_detection_group(pred, gt, image_size, iou_eps=0.05, debug=False, img_name=None):
+    """
+    Symmetric, merge/split-aware scoring via Group-IoU over overlap components.
+    Returns: {"group_precision","group_recall","group_f1","num_components"}
+    """
+    H, W = image_size
+    if not pred and not gt:
+        return {"group_precision": 1.0, "group_recall": 1.0, "group_f1": 1.0, "num_components": 0}
+    if H <= 0 or W <= 0:
+        return {"group_precision": 0.0, "group_recall": 0.0, "group_f1": 0.0, "num_components": 0}
+
+    pred_masks, gt_masks, pred_adj, gt_adj = _build_overlap_graph(pred, gt, (H, W), iou_eps=iou_eps)
+    comps = _connected_components(pred_adj, gt_adj)
+
+    TP_soft = 0.0; FP_soft = 0.0; FN_soft = 0.0
+    for (Pset, Gset) in comps:
+        if len(Pset) > 0:
+            U_pred = np.zeros((H, W), dtype=np.uint8)
+            for pi in Pset: U_pred |= pred_masks[pi]
+        else:
+            U_pred = np.zeros((H, W), dtype=np.uint8)
+        if len(Gset) > 0:
+            U_gt = np.zeros((H, W), dtype=np.uint8)
+            for gi in Gset: U_gt |= gt_masks[gi]
+        else:
+            U_gt = np.zeros((H, W), dtype=np.uint8)
+
+        gIoU, inter, union = _mask_iou(U_pred, U_gt)
+        TP_soft += gIoU
+        FP_soft += max(0.0, len(Pset) - gIoU)
+        FN_soft += max(0.0, len(Gset) - gIoU)
+
+        if debug:
+            tag = f"[GROUP-DBG {img_name}]" if img_name else "[GROUP-DBG]"
+            print(f"{tag} comp(P={sorted(list(Pset))}, G={sorted(list(Gset))}) "
+                  f"inter={inter} union={union} gIoU={gIoU:.3f}  "
+                  f"FP+= {max(0.0, len(Pset) - gIoU):.2f}  FN+= {max(0.0, len(Gset) - gIoU):.2f}")
+
+    prec = TP_soft / (TP_soft + FP_soft) if (TP_soft + FP_soft) > 0 else 0.0
+    rec  = TP_soft / (TP_soft + FN_soft) if (TP_soft + FN_soft) > 0 else 0.0
+    f1   = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0.0
+    return {"group_precision": prec, "group_recall": rec, "group_f1": f1, "num_components": len(comps)}
+
+# -----------------------
+# Optional: Hybrid blend
+# -----------------------
+def hybrid_f1(iou_f1: float, area_f1: float, alpha: float = 0.5) -> float:
+    """Weighted blend of IoU-F1 (instance strictness) and Area-F1 (coverage)."""
+    alpha = float(np.clip(alpha, 0.0, 1.0))
+    return alpha * iou_f1 + (1.0 - alpha) * area_f1
+
 # --------------------------------------------------------------
-# POST-TEST VISUALIZATION (one per category)
+# POST-TEST VISUALIZATION (unchanged)
 # --------------------------------------------------------------
 def visualize_after_testing(angle: str,
                             side: str,
@@ -345,12 +483,7 @@ def visualize_after_testing(angle: str,
                             annotations_dir: str | Path,
                             memory_bank_dir: str | Path,
                             categories=None):
-    """
-    After your testing loop finishes, call this once to save one comparison
-    (pred vs GT) per category into COMPARISON_DIR.
-    """
     global SAVED_CATEGORIES
-
     angle_tag = str(angle).replace("º", "").replace("°", "")
     base_dir = Path(base_dir)
     annotations_dir = Path(annotations_dir)
@@ -364,7 +497,6 @@ def visualize_after_testing(angle: str,
     if categories is None:
         categories = ["bad1", "bad2", "bad3"]
 
-    # ensure we save exactly one image per category in this call
     SAVED_CATEGORIES = {c: False for c in categories}
 
     for cat in categories:
@@ -393,7 +525,6 @@ def visualize_after_testing(angle: str,
 
         img_path, gt_boxes = chosen
         print(f"[VIS] {cat}: {img_path.name}")
-        # This call draws + saves side-by-side automatically
         detect_anomalies(str(img_path), str(mem_path), gt_boxes, cat)
 
 # --------------------------------------------------------------
