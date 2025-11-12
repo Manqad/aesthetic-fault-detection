@@ -1,0 +1,19 @@
+ANGLES = ["0"]
+SIDES  = ["front"]
+BAD_CATS = ["bad1", "bad2", "bad3"]
+
+HR= 0.50 → IoU-F1= 0.000 | Area-F1= 0.112 | Group-F1= 0.006 | Overall= 0.039 (42 imgs)
+THR= 0.89 → IoU-F1= 0.000 | Area-F1= 0.112 | Group-F1= 0.006 | Overall= 0.039 (42 imgs)
+THR= 1.29 → IoU-F1= 0.000 | Area-F1= 0.112 | Group-F1= 0.006 | Overall= 0.039 (42 imgs)
+THR= 1.68 → IoU-F1= 0.000 | Area-F1= 0.112 | Group-F1= 0.005 | Overall= 0.039 (42 imgs)
+THR= 2.08 → IoU-F1= 0.000 | Area-F1= 0.112 | Group-F1= 0.006 | Overall= 0.039 (42 imgs)
+THR= 2.47 → IoU-F1= 0.012 | Area-F1= 0.114 | Group-F1= 0.010 | Overall= 0.045 (42 imgs)
+THR= 2.87 → IoU-F1= 0.013 | Area-F1= 0.159 | Group-F1= 0.011 | Overall= 0.060 (42 imgs)
+THR= 3.26 → IoU-F1= 0.090 | Area-F1= 0.267 | Group-F1= 0.032 | Overall= 0.129 (42 imgs)
+THR= 3.66 → IoU-F1= 0.231 | Area-F1= 0.355 | Group-F1= 0.098 | Overall= 0.228 (42 imgs)
+THR= 4.05 → IoU-F1= 0.311 | Area-F1= 0.466 | Group-F1= 0.173 | Overall= 0.317 (42 imgs)
+THR= 4.45 → IoU-F1= 0.297 | Area-F1= 0.474 | Group-F1= 0.197 | Overall= 0.322 (42 imgs)
+THR= 4.84 → IoU-F1= 0.330 | Area-F1= 0.395 | Group-F1= 0.259 | Overall= 0.328 (42 imgs)
+THR= 5.24 → IoU-F1= 0.336 | Area-F1= 0.248 | Group-F1= 0.209 | Overall= 0.265 (42 imgs)
+THR= 5.63 → IoU-F1= 0.102 | Area-F1= 0.114 | Group-F1= 0.056 | Overall= 0.091 (42 imgs)
+THR= 6.03 → IoU-F1= 0.000 | Area-F1= 0.004 | Group-F1= 0.000 | Overall= 0.001 (42 imgs)
