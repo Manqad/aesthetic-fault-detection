@@ -22,7 +22,7 @@ except Exception:
 # CONFIG
 # --------------------------------------------------------------
 IMG_SIZE = 512
-ANOMALY_THRESHOLD = 4.3  # tune higher to reduce FPs, lower to catch more
+ANOMALY_THRESHOLD = 4.84  # tune higher to reduce FPs, lower to catch more
 
 # Component post-processing
 MIN_BOX_W = 6
@@ -275,35 +275,51 @@ def iou(a, b):
     union = wa * ha + wb * hb - inter
     return inter / union if union > 0 else 0.0
 
-def evaluate_detection(pred, gt, iou_thr=0.2, debug=False, img_name=None):
-    """IoU-based one-to-one greedy matching (your current metric)."""
-    if not pred and not gt: return {"precision": 1.0, "recall": 1.0, "f1_score": 1.0}
-    if not pred: return {"precision": 0.0, "recall": 0.0, "f1_score": 0.0}
-    if not gt:   return {"precision": 0.0, "recall": 0.0, "f1_score": 0.0}
+def evaluate_detection(pred, gt, iou_thr=0.2, debug=False, img_name=None, image_size=None, alpha=0.5):
+    """
+    Hybrid evaluation:
+      - IoU F1 (instance matching)
+      - Area F1 (coverage)
+      - Combined Hybrid F1 = α*IoU + (1−α)*Area
+    """
+    # --- IoU-based ---
+    if not pred and not gt:
+        iou_prec = iou_rec = iou_f1 = 1.0
+    elif not pred or not gt:
+        iou_prec = iou_rec = iou_f1 = 0.0
+    else:
+        tp = 0
+        matched = [False] * len(gt)
+        for p in pred:
+            for i, g in enumerate(gt):
+                if not matched[i] and iou(p, g) >= iou_thr:
+                    tp += 1
+                    matched[i] = True
+                    break
+        fp = len(pred) - tp
+        fn = len(gt) - tp
+        iou_prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        iou_rec  = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        iou_f1   = 2 * iou_prec * iou_rec / (iou_prec + iou_rec) if (iou_prec + iou_rec) > 0 else 0.0
 
-    if debug:
-        print(f"[IOU-DBG] {img_name or ''} preds={len(pred)} gts={len(gt)} thr={iou_thr}")
-        for pi, p in enumerate(pred):
-            best, best_i = 0.0, -1
-            for gi, g in enumerate(gt):
-                v = iou(p, g)
-                if v > best: best, best_i = v, gi
-            print(f"  pred[{pi}]={p}  best_iou={best:.3f} -> gt[{best_i}]={gt[best_i] if best_i>=0 else None}")
+    # --- Area-based ---
+    if image_size is not None:
+        area_res = evaluate_detection_area(pred, gt, image_size=image_size)
+        area_f1 = area_res["area_f1"]
+    else:
+        area_f1 = 0.0
 
-    tp = 0
-    matched = [False] * len(gt)
-    for p in pred:
-        for i, g in enumerate(gt):
-            if not matched[i] and iou(p, g) >= iou_thr:
-                tp += 1
-                matched[i] = True
-                break
-    fp = len(pred) - tp
-    fn = len(gt) - tp
-    prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
-    rec  = tp / (tp + fn) if (tp + fn) > 0 else 0.0
-    f1   = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0.0
-    return {"precision": prec, "recall": rec, "f1_score": f1}
+    # --- Hybrid blend ---
+    hybrid_f1_val = hybrid_f1(iou_f1, area_f1, alpha=alpha)
+
+    return {
+        "precision": iou_prec,
+        "recall": iou_rec,
+        "f1_score": iou_f1,
+        "area_f1": area_f1,
+        "hybrid_f1": hybrid_f1_val,
+    }
+
 
 # ==============================================================
 # NEW: ADDITIONAL EVALUATION MODES (NO CHANGE TO DETECTION)

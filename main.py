@@ -14,8 +14,8 @@ BASE_DIR        = Path("D:/fyp/aesthetic-fault-detection/acpart2")
 MEMORY_BANK_DIR = Path("D:/fyp/aesthetic-fault-detection/models")
 ANNOTATIONS_DIR = Path("D:/fyp/aesthetic-fault-detection/annotations")
 
-ANGLES = ["45upright"]                    # degree sign removed everywhere
-SIDES  = ["front"]               # e.g., ["front","back"]
+ANGLES = ["0"]                    # degree sign removed everywhere
+SIDES  = ["back"]               # e.g., ["front","back"]
 BAD_CATS = ["bad1", "bad2", "bad3"]
 
 # --------------------------------------------------------------
@@ -69,9 +69,22 @@ def test_category(angle: str, side: str, cat: str, iou_thr: float, verbose: bool
         _, pred_boxes, _ = detect_anomalies(
             str(img_path), str(mem_path), gt_boxes, cat
         )
+
+        from PIL import Image
+        with Image.open(img_path) as im:
+            orig_w, orig_h = im.size
+
+
         metrics = evaluate_detection(
-            pred_boxes, gt_boxes, iou_thr=iou_thr, debug=verbose, img_name=name
+        pred_boxes,
+        gt_boxes,
+        iou_thr=iou_thr,
+        debug=verbose,
+        img_name=name,
+        image_size=(orig_h, orig_w),   # if you track it earlier
+        alpha=0.5                      # equal IoU/Area weight
         )
+
 
         # Normalize keys so later aggregation is simple
         if "precision" in metrics:
