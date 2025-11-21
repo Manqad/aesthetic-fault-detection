@@ -17,3 +17,79 @@ THR= 4.84 → IoU-F1= 0.330 | Area-F1= 0.395 | Group-F1= 0.259 | Overall= 0.328 
 THR= 5.24 → IoU-F1= 0.336 | Area-F1= 0.248 | Group-F1= 0.209 | Overall= 0.265 (42 imgs)
 THR= 5.63 → IoU-F1= 0.102 | Area-F1= 0.114 | Group-F1= 0.056 | Overall= 0.091 (42 imgs)
 THR= 6.03 → IoU-F1= 0.000 | Area-F1= 0.004 | Group-F1= 0.000 | Overall= 0.001 (42 imgs)
+
+
+Binary evaluations
+ANGLES   = ["0"]
+SIDES    = ["front", "back", "side2"]
+BAD_CATS = ["bad1", "bad2", "bad3", "badgood"]
+
+THR= 3.000 → F1=0.9398  Acc=0.8864  P=0.8864 R=1.0000  Spec=0.0000  n=132
+THR= 3.167 → F1=0.9398  Acc=0.8864  P=0.8864 R=1.0000  Spec=0.0000  n=132
+THR= 3.333 → F1=0.9398  Acc=0.8864  P=0.8864 R=1.0000  Spec=0.0000  n=132
+THR= 3.500 → F1=0.9512  Acc=0.9091  P=0.9070 R=1.0000  Spec=0.2000  n=132
+THR= 3.667 → F1=0.9658  Acc=0.9394  P=0.9658 R=0.9658  Spec=0.7333  n=132
+THR= 3.833 → F1=0.9507  Acc=0.9167  P=1.0000 R=0.9060  Spec=1.0000  n=132
+THR= 4.000 → F1=0.9315  Acc=0.8864  P=1.0000 R=0.8718  Spec=1.0000  n=132
+THR= 4.167 → F1=0.9217  Acc=0.8712  P=1.0000 R=0.8547  Spec=1.0000  n=132
+THR= 4.333 → F1=0.8962  Acc=0.8333  P=1.0000 R=0.8120  Spec=1.0000  n=132
+THR= 4.500 → F1=0.8061  Acc=0.7121  P=1.0000 R=0.6752  Spec=1.0000  n=132
+THR= 4.667 → F1=0.7684  Acc=0.6667  P=1.0000 R=0.6239  Spec=1.0000  n=132
+THR= 4.833 → F1=0.7351  Acc=0.6288  P=1.0000 R=0.5812  Spec=1.0000  n=132
+THR= 5.000 → F1=0.6154  Acc=0.5076  P=1.0000 R=0.4444  Spec=1.0000  n=132
+THR= 5.167 → F1=0.5375  Acc=0.4394  P=1.0000 R=0.3675  Spec=1.0000  n=132
+
+
+Tuning thresholds, zero degrees, updated models
+
+🔍 Sweeping 50 thresholds from 3.00 → 7.00
+Weights → IoU=0.34, Area=0.33, Group=0.33
+
+THR= 3.00 → IoU-F1= 0.001 | Area-F1= 0.114 | Group-F1= 0.003 | Overall= 0.039 (132 imgs)
+THR= 3.08 → IoU-F1= 0.000 | Area-F1= 0.114 | Group-F1= 0.003 | Overall= 0.039 (132 imgs)
+THR= 3.16 → IoU-F1= 0.003 | Area-F1= 0.115 | Group-F1= 0.004 | Overall= 0.040 (132 imgs)
+THR= 3.24 → IoU-F1= 0.011 | Area-F1= 0.116 | Group-F1= 0.006 | Overall= 0.044 (132 imgs)
+THR= 3.33 → IoU-F1= 0.013 | Area-F1= 0.117 | Group-F1= 0.007 | Overall= 0.045 (132 imgs)
+THR= 3.41 → IoU-F1= 0.014 | Area-F1= 0.119 | Group-F1= 0.008 | Overall= 0.047 (132 imgs)
+THR= 3.49 → IoU-F1= 0.020 | Area-F1= 0.121 | Group-F1= 0.010 | Overall= 0.050 (132 imgs)
+THR= 3.57 → IoU-F1= 0.020 | Area-F1= 0.124 | Group-F1= 0.013 | Overall= 0.052 (132 imgs)
+THR= 3.65 → IoU-F1= 0.022 | Area-F1= 0.127 | Group-F1= 0.014 | Overall= 0.054 (132 imgs)
+THR= 3.73 → IoU-F1= 0.026 | Area-F1= 0.132 | Group-F1= 0.016 | Overall= 0.058 (132 imgs)
+THR= 3.82 → IoU-F1= 0.030 | Area-F1= 0.136 | Group-F1= 0.017 | Overall= 0.061 (132 imgs)
+THR= 3.90 → IoU-F1= 0.037 | Area-F1= 0.139 | Group-F1= 0.020 | Overall= 0.065 (132 imgs)
+THR= 3.98 → IoU-F1= 0.042 | Area-F1= 0.148 | Group-F1= 0.024 | Overall= 0.071 (132 imgs)
+THR= 4.06 → IoU-F1= 0.047 | Area-F1= 0.159 | Group-F1= 0.029 | Overall= 0.078 (132 imgs)
+THR= 4.14 → IoU-F1= 0.052 | Area-F1= 0.171 | Group-F1= 0.033 | Overall= 0.085 (132 imgs)
+THR= 4.22 → IoU-F1= 0.056 | Area-F1= 0.181 | Group-F1= 0.036 | Overall= 0.091 (132 imgs)
+THR= 4.31 → IoU-F1= 0.062 | Area-F1= 0.188 | Group-F1= 0.037 | Overall= 0.095 (132 imgs)
+THR= 4.39 → IoU-F1= 0.069 | Area-F1= 0.196 | Group-F1= 0.037 | Overall= 0.100 (132 imgs)
+THR= 4.47 → IoU-F1= 0.071 | Area-F1= 0.194 | Group-F1= 0.037 | Overall= 0.101 (132 imgs)
+THR= 4.55 → IoU-F1= 0.068 | Area-F1= 0.183 | Group-F1= 0.036 | Overall= 0.095 (132 imgs)
+THR= 4.63 → IoU-F1= 0.060 | Area-F1= 0.163 | Group-F1= 0.037 | Overall= 0.086 (132 imgs)
+THR= 4.71 → IoU-F1= 0.063 | Area-F1= 0.149 | Group-F1= 0.039 | Overall= 0.084 (132 imgs)
+THR= 4.80 → IoU-F1= 0.071 | Area-F1= 0.137 | Group-F1= 0.043 | Overall= 0.083 (132 imgs)
+THR= 4.88 → IoU-F1= 0.078 | Area-F1= 0.124 | Group-F1= 0.047 | Overall= 0.083 (132 imgs)
+THR= 4.96 → IoU-F1= 0.080 | Area-F1= 0.111 | Group-F1= 0.049 | Overall= 0.080 (132 imgs)
+THR= 5.04 → IoU-F1= 0.088 | Area-F1= 0.099 | Group-F1= 0.053 | Overall= 0.080 (132 imgs)
+THR= 5.12 → IoU-F1= 0.098 | Area-F1= 0.087 | Group-F1= 0.055 | Overall= 0.080 (132 imgs)
+THR= 5.20 → IoU-F1= 0.110 | Area-F1= 0.075 | Group-F1= 0.055 | Overall= 0.080 (132 imgs)
+THR= 5.29 → IoU-F1= 0.112 | Area-F1= 0.065 | Group-F1= 0.050 | Overall= 0.076 (132 imgs)
+THR= 5.37 → IoU-F1= 0.099 | Area-F1= 0.053 | Group-F1= 0.043 | Overall= 0.066 (132 imgs)
+THR= 5.45 → IoU-F1= 0.077 | Area-F1= 0.061 | Group-F1= 0.051 | Overall= 0.063 (132 imgs)
+THR= 5.53 → IoU-F1= 0.085 | Area-F1= 0.071 | Group-F1= 0.064 | Overall= 0.073 (132 imgs)
+THR= 5.61 → IoU-F1= 0.072 | Area-F1= 0.068 | Group-F1= 0.065 | Overall= 0.068 (132 imgs)
+THR= 5.69 → IoU-F1= 0.081 | Area-F1= 0.075 | Group-F1= 0.075 | Overall= 0.077 (132 imgs)
+THR= 5.94 → IoU-F1= 0.089 | Area-F1= 0.084 | Group-F1= 0.086 | Overall= 0.086 (132 imgs)
+THR= 6.02 → IoU-F1= 0.088 | Area-F1= 0.084 | Group-F1= 0.085 | Overall= 0.086 (132 imgs)
+THR= 6.10 → IoU-F1= 0.087 | Area-F1= 0.084 | Group-F1= 0.085 | Overall= 0.085 (132 imgs)
+THR= 6.18 → IoU-F1= 0.101 | Area-F1= 0.099 | Group-F1= 0.099 | Overall= 0.100 (132 imgs)
+THR= 6.27 → IoU-F1= 0.099 | Area-F1= 0.099 | Group-F1= 0.099 | Overall= 0.099 (132 imgs)
+THR= 6.35 → IoU-F1= 0.098 | Area-F1= 0.099 | Group-F1= 0.099 | Overall= 0.099 (132 imgs)
+THR= 6.43 → IoU-F1= 0.106 | Area-F1= 0.106 | Group-F1= 0.106 | Overall= 0.106 (132 imgs)
+THR= 6.51 → IoU-F1= 0.106 | Area-F1= 0.106 | Group-F1= 0.106 | Overall= 0.106 (132 imgs)
+THR= 6.59 → IoU-F1= 0.106 | Area-F1= 0.106 | Group-F1= 0.106 | Overall= 0.106 (132 imgs)
+THR= 6.67 → IoU-F1= 0.114 | Area-F1= 0.114 | Group-F1= 0.114 | Overall= 0.114 (132 imgs)
+THR= 6.76 → IoU-F1= 0.114 | Area-F1= 0.114 | Group-F1= 0.114 | Overall= 0.114 (132 imgs)
+THR= 6.84 → IoU-F1= 0.114 | Area-F1= 0.114 | Group-F1= 0.114 | Overall= 0.114 (132 imgs)
+THR= 6.92 → IoU-F1= 0.114 | Area-F1= 0.114 | Group-F1= 0.114 | Overall= 0.114 (132 imgs)
+THR= 7.00 → IoU-F1= 0.114 | Area-F1= 0.114 | Group-F1= 0.114 | Overall= 0.114 (132 imgs)
