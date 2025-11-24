@@ -1,9 +1,14 @@
-# binary_eval.py — Full binary evaluation (faulty vs good) + optional threshold sweep
-# Uses your existing detect_anomalies() from test.py (detection unchanged).
+# ==========================================================
+# OPTIMIZED BINARY EVAL WITH EMERGENCY SAVING
+# ==========================================================
 
 from pathlib import Path
 import csv
 import xml.etree.ElementTree as ET
+from functools import lru_cache
+import pickle
+import signal
+import sys
 
 from tqdm import tqdm
 import numpy as np
@@ -11,266 +16,413 @@ import numpy as np
 import test as test_mod
 from test import detect_anomalies
 
-# ======================================================
-# USER CONFIG
-# ======================================================
 
-# Dataset / paths (same as main.py)
-BASE_DIR        = Path("D:/fyp/aesthetic-fault-detection/acpart2")
-MEMORY_BANK_DIR = Path("D:/fyp/aesthetic-fault-detection/models")
-ANNOTATIONS_DIR = Path("D:/fyp/aesthetic-fault-detection/annotations")
+# ==========================================================
+# USER CONFIG (unchanged)
+# ==========================================================
 
-ANGLES   = ["0"]
+BASE_DIR        = Path("C:/Users/mr08456/Desktop/fyp/aesthetic-fault-detection/acpart2")
+MEMORY_BANK_DIR = Path("C:/Users/mr08456/Desktop/fyp/aesthetic-fault-detection/models")
+ANNOTATIONS_DIR = Path("C:/Users/mr08456/Desktop/fyp/aesthetic-fault-detection/annotations")
+
+ANGLES   = ["0", "45upright"]
 SIDES    = ["front", "back", "side2"]
 BAD_CATS = ["bad1", "bad2", "bad3", "badgood"]
-# Note: "badgood" XMLs should have NO <box> → treated as GT good images.
 
-# --- Mode selection ---
-RUN_SWEEP       = False   # True  = sweep thresholds, False = single eval
+RUN_SWEEP = False
 
-# --- Sweep config (used only if RUN_SWEEP = True) ---
-SWEEP_THR_MIN       = 3.0
-SWEEP_THR_MAX       = 7.0
-SWEEP_STEPS         = 25     # number of thresholds between min and max
-SWEEP_SAMPLE_LIMIT  = 0      # 0 = all images, >0 = cap per (angle,side,cat)
+SWEEP_THR_MIN = 3.0
+SWEEP_THR_MAX = 7.0
+SWEEP_STEPS   = 40
+SWEEP_SAMPLE_LIMIT = 0
 
-# --- Single-eval config (used if RUN_SWEEP = False) ---
-SINGLE_EVAL_THRESHOLD = None  # None -> use current test_mod.ANOMALY_THRESHOLD
-SINGLE_SAMPLE_LIMIT   = 0     # 0 = all
+SINGLE_EVAL_THRESHOLD = None
+SINGLE_SAMPLE_LIMIT   = 0
 SINGLE_OUT_CSV        = "binary_full_confusion.csv"
-QUIET = False                # True = less printing, no tqdm bars
+QUIET = False
 
-# ======================================================
-# HELPERS
-# ======================================================
 
-def load_xml(xml_path: Path):
-    """Load CVAT-style XML: returns dict[name] = list of [x,y,w,h] boxes."""
+# ==========================================================
+# EMERGENCY SAVE VARIABLES
+# ==========================================================
+
+current_best = None
+completed_results = []
+PROGRESS_FILE = "sweep_progress.pkl"
+
+
+# ==========================================================
+# EMERGENCY SAVE HANDLER
+# ==========================================================
+
+def emergency_save(sig=None, frame=None):
+    """Save progress on interrupt and print current best"""
+    print(f"\n{'!'*60}")
+    print("⚡ INTERRUPT RECEIVED! Saving current progress...")
+    print(f"{'!'*60}")
+    
+    if completed_results:
+        print(f"📊 Completed {len(completed_results)}/{SWEEP_STEPS} thresholds")
+        
+        # Print current best
+        if current_best:
+            thr, f1, res = current_best
+            print(f"🏆 CURRENT BEST:")
+            print(f"   Threshold: {thr:.3f}")
+            print(f"   F1-Score:  {f1:.4f}")
+            print(f"   MCC:       {res['metrics']['mcc']:.4f}")
+            print(f"   Accuracy:  {res['metrics']['accuracy']:.4f}")
+            print(f"   Precision: {res['metrics']['precision']:.4f}")
+            print(f"   Recall:    {res['metrics']['recall']:.4f}")
+        
+        # Save all results
+        save_data = {
+            'current_best': current_best,
+            'completed_results': completed_results,
+            'sweep_config': {
+                'thr_min': SWEEP_THR_MIN,
+                'thr_max': SWEEP_THR_MAX,
+                'steps': SWEEP_STEPS
+            }
+        }
+        
+        with open(PROGRESS_FILE, "wb") as f:
+            pickle.dump(save_data, f)
+        
+        print(f"💾 Progress saved to: {PROGRESS_FILE}")
+        print("🔌 You can resume later or analyze the saved results")
+        
+    else:
+        print("❌ No results completed yet")
+    
+    sys.exit(0)
+
+# Register the signal handler
+signal.signal(signal.SIGINT, emergency_save)
+
+
+# ==========================================================
+# FASTER XML LOADING (cached)
+# ==========================================================
+
+@lru_cache(maxsize=None)
+def load_xml(xml_path_str):
+    """Cached XML parser."""
+    xml_path = Path(xml_path_str)
     tree = ET.parse(xml_path)
     root = tree.getroot()
+
     ann = {}
     for img in root.findall("image"):
         name = img.get("name")
         boxes = []
         for box in img.findall("box"):
-            xtl = float(box.get("xtl")); ytl = float(box.get("ytl"))
-            xbr = float(box.get("xbr")); ybr = float(box.get("ybr"))
+            xtl = float(box.get("xtl"))
+            ytl = float(box.get("ytl"))
+            xbr = float(box.get("xbr"))
+            ybr = float(box.get("ybr"))
             boxes.append([xtl, ytl, xbr - xtl, ybr - ytl])
         ann[name] = boxes
+
     return ann
 
-def metrics_from_confusion(tp, fp, fn, tn):
+
+# ==========================================================
+# PRELOAD ALL DATA (paths + XML) ONCE
+# ==========================================================
+
+def preload_dataset(sample_limit=0, quiet=False):
     """
-    Binary metrics. Positive class = 'faulty' (has at least one GT box).
+    Preload:
+    - All XML annotations (cached)
+    - All image paths
+    - All memory bank paths
+
+    Returned structure is reused for every threshold.
     """
+    dataset = []
+
+    for ang in ANGLES:
+        for side in SIDES:
+
+            mem_path = MEMORY_BANK_DIR / f"patchcore_{ang}_{side}.pth"
+            if not mem_path.exists():
+                if not quiet:
+                    print(f"[SKIP] No memory bank: {mem_path}")
+                continue
+
+            for cat in BAD_CATS:
+
+                xml_path = ANNOTATIONS_DIR / f"{ang}-{side}-bad-{cat}.xml"
+                img_dir  = BASE_DIR / ang / side / "bad" / cat
+
+                if not xml_path.exists() or not img_dir.exists():
+                    if not quiet:
+                        print(f"[SKIP] Missing XML or folder for {ang}-{side}-{cat}")
+                    continue
+
+                ann = load_xml(str(xml_path))
+                items = list(ann.items())
+                if sample_limit > 0:
+                    items = items[:sample_limit]
+
+                dataset.append((ang, side, cat, mem_path, img_dir, items))
+
+    return dataset
+
+
+# ==========================================================
+# METRICS (unchanged)
+# ==========================================================
+
+def metric_from_confusion(tp, fp, fn, tn):
     prec = tp / (tp + fp) if (tp + fp) > 0 else 0.0
     rec  = tp / (tp + fn) if (tp + fn) > 0 else 0.0
     f1   = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0.0
-    acc  = (tp + tn) / max(1, (tp + fp + fn + tn))
-    spec = tn / (tn + fp) if (tn + fp) > 0 else 0.0
+
+    total = tp + fp + fn + tn
+    acc = (tp + tn) / total if total > 0 else 0.0
+
+    tnr = tn / (tn + fp) if (tn + fp) > 0 else 0.0
+    balanced = 0.5 * (rec + tnr)
+
+    denom = ((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)) ** 0.5
+    mcc = (tp * tn - fp * fn) / denom if denom > 0 else 0.0
+
     return {
         "accuracy": acc,
         "precision": prec,
         "recall": rec,
         "f1": f1,
-        "specificity": spec
+        "specificity": tnr,
+        "balanced_accuracy": balanced,
+        "mcc": mcc,
     }
 
-# ======================================================
-# CORE EVALUATION (one pass at a given threshold)
-# ======================================================
 
-def evaluate_binary(threshold=None,
-                    sample_limit=0,
-                    out_csv="",
-                    quiet=False):
-    """
-    Full binary evaluation on all bad categories (including 'badgood').
+# ==========================================================
+# CORE EVAL (now much faster)
+# ==========================================================
 
-    For each image:
-      gt_faulty   = (len(gt_boxes) > 0)
-      pred_faulty = (len(pred_boxes) > 0)
-
-      TP: gt_faulty   & pred_faulty
-      FN: gt_faulty   & not pred_faulty
-      FP: not gt_faulty & pred_faulty
-      TN: not gt_faulty & not pred_faulty
-    """
+def evaluate_binary_fast(dataset, threshold=None, out_csv="", quiet=False):
     if threshold is not None:
         test_mod.ANOMALY_THRESHOLD = float(threshold)
 
-    # Avoid comparison save spam during evaluation
     test_mod.SAVED_CATEGORIES = {"bad1": True, "bad2": True, "bad3": True}
 
     TP = FP = FN = TN = 0
-    total_images = 0
     rows = []
 
-    for ang in ANGLES:
-        for side in SIDES:
-            mem_path = MEMORY_BANK_DIR / f"patchcore_{ang}_{side}.pth"
-            if not mem_path.exists():
-                if not quiet:
-                    print(f"[SKIP] Missing memory bank: {mem_path}")
+    for (ang, side, cat, mem_path, img_dir, items) in tqdm(dataset, disable=quiet):
+        for name, gt_boxes in items:
+
+            img_path = img_dir / name
+            if not img_path.exists():
                 continue
 
-            for cat in BAD_CATS:
-                xml_file = f"{ang}-{side}-bad-{cat}.xml"
-                xml_path = ANNOTATIONS_DIR / xml_file
-                img_dir  = BASE_DIR / ang / side / "bad" / cat
+            _, pred_boxes, _ = detect_anomalies(
+                str(img_path), str(mem_path), gt_boxes, cat=cat
+            )
 
-                if not xml_path.exists() or not img_dir.exists():
-                    if not quiet:
-                        print(f"[SKIP] Missing XML or images for {ang}-{side}-{cat}")
-                    continue
+            gt_fault = len(gt_boxes) > 0
+            pred_fault = len(pred_boxes) > 0
 
-                ann = load_xml(xml_path)
-                img_items = list(ann.items())
-                if sample_limit > 0:
-                    img_items = img_items[:sample_limit]
+            if gt_fault:
+                TP += pred_fault
+                FN += (not pred_fault)
+            else:
+                FP += pred_fault
+                TN += (not pred_fault)
 
-                if not quiet:
-                    print(f"\n[TEST] {ang}-{side}-{cat}: {len(img_items)} images  "
-                          f"(thr={test_mod.ANOMALY_THRESHOLD:.3f})")
+            rows.append({
+                "angle": ang,
+                "side": side,
+                "cat": cat,
+                "image": name,
+                "gt_faulty": int(gt_fault),
+                "pred_faulty": int(pred_fault)
+            })
 
-                for name, gt_boxes in tqdm(img_items,
-                                           desc=f"{cat}",
-                                           unit="img",
-                                           disable=quiet):
-                    img_path = img_dir / name
-                    if not img_path.exists():
-                        if not quiet:
-                            tqdm.write(f"  [WARN] Missing image: {img_path}")
-                        continue
-
-                    # Detection logic from test.py (unchanged)
-                    _, pred_boxes, _ = detect_anomalies(
-                        str(img_path), str(mem_path), gt_boxes, cat=cat
-                    )
-
-                    gt_faulty   = (len(gt_boxes)  > 0)
-                    pred_faulty = (len(pred_boxes) > 0)
-
-                    # Full confusion matrix logic
-                    if   gt_faulty and pred_faulty: TP += 1
-                    elif gt_faulty and not pred_faulty: FN += 1
-                    elif (not gt_faulty) and pred_faulty: FP += 1
-                    else: TN += 1
-
-                    total_images += 1
-                    rows.append({
-                        "angle": ang,
-                        "side": side,
-                        "cat": cat,
-                        "image": name,
-                        "gt_faulty": int(gt_faulty),
-                        "pred_faulty": int(pred_faulty)
-                    })
-
-    m = metrics_from_confusion(TP, FP, FN, TN)
+    metrics = metric_from_confusion(TP, FP, FN, TN)
 
     if out_csv:
         with open(out_csv, "w", newline="") as f:
-            writer = csv.DictWriter(
-                f,
-                fieldnames=["angle","side","cat","image","gt_faulty","pred_faulty"]
-            )
+            writer = csv.DictWriter(f, fieldnames=rows[0].keys())
             writer.writeheader()
             writer.writerows(rows)
         if not quiet:
-            print(f"\n[WRITE] per-image binary results → {out_csv}")
-
-    if not quiet:
-        print("\n=== Full Binary Evaluation (faulty vs good) ===")
-        print(f"Threshold (ANOMALY_THRESHOLD): {test_mod.ANOMALY_THRESHOLD:.4f}")
-        print(f"Images evaluated: {total_images}")
-        print("\nConfusion matrix (Positive = faulty):")
-        print(f"  TP: {TP:5d}  FP: {FP:5d}")
-        print(f"  FN: {FN:5d}  TN: {TN:5d}")
-        print("\nMetrics:")
-        print(f"  Accuracy   : {m['accuracy']:.4f}")
-        print(f"  Precision  : {m['precision']:.4f}  (PPV)")
-        print(f"  Recall     : {m['recall']:.4f}   (TPR / Sensitivity)")
-        print(f"  Specificity: {m['specificity']:.4f}  (TNR)")
-        print(f"  F1-score   : {m['f1']:.4f}")
+            print(f"[WRITE] → {out_csv}")
 
     return {
-        "TP": TP,
-        "FP": FP,
-        "FN": FN,
-        "TN": TN,
-        "metrics": m,
-        "n": total_images,
-        "threshold": test_mod.ANOMALY_THRESHOLD,
+        "TP": TP, "FP": FP, "FN": FN, "TN": TN,
+        "metrics": metrics,
+        "threshold": threshold,
+        "rows": rows
     }
 
-# ======================================================
-# THRESHOLD SWEEP (optional)
-# ======================================================
 
-def sweep_threshold_binary(thr_min, thr_max, steps,
-                           sample_limit=0,
-                           quiet=False):
-    """
-    Sweep anomaly thresholds and choose the best one w.r.t F1
-    for binary classification (faulty vs good).
-    """
-    thresholds = np.linspace(thr_min, thr_max, steps).tolist()
-    results = []
+# ==========================================================
+# SWEEP WITH EMERGENCY SAVING
+# ==========================================================
 
-    for t in thresholds:
-        res = evaluate_binary(
-            threshold=t,
-            sample_limit=sample_limit,
-            out_csv="",      # don't write CSV per threshold
-            quiet=True
-        )
-        m = res["metrics"]
-        results.append((t, m["f1"], res))
+def sweep_threshold_binary_fast(dataset, thr_min, thr_max, steps, quiet=False):
+    global current_best, completed_results
+    
+    thresholds = np.linspace(thr_min, thr_max, steps)
+    
+    # Try to load previous progress
+    try:
+        with open(PROGRESS_FILE, "rb") as f:
+            saved_data = pickle.load(f)
+            completed_results = saved_data['completed_results']
+            current_best = saved_data['current_best']
+            print(f"🔄 RESUMED: {len(completed_results)}/{steps} thresholds already completed!")
+            
+            if current_best:
+                thr, f1, res = current_best
+                print(f"🏆 Previous best: thr={thr:.3f}, F1={f1:.4f}, MCC={res['metrics']['mcc']:.4f}")
+            
+    except FileNotFoundError:
+        completed_results = []
+        current_best = None
+        print("🆕 Starting fresh sweep...")
+    
+    # Find where to start
+    start_idx = len(completed_results)
+    if start_idx >= len(thresholds):
+        print("✅ All thresholds already completed! Returning results.")
+        return current_best, completed_results
+    
+    print(f"🎯 Starting from threshold {start_idx + 1}/{len(thresholds)}")
+    
+    best = current_best
+    
+    # Continue from where we left off
+    for i, thr in enumerate(thresholds[start_idx:], start_idx):
+        try:
+            res = evaluate_binary_fast(dataset, threshold=thr, quiet=True)
+            f1 = res["metrics"]["f1"]
+            
+            # Store this result
+            result_data = {
+                "threshold": thr,
+                "metrics": res["metrics"],
+                "confusion": {"TP": res["TP"], "FP": res["FP"], "FN": res["FN"], "TN": res["TN"]}
+            }
+            completed_results.append(result_data)
+            
+            # Update best
+            if (best is None) or (f1 > best[1]):
+                best = (thr, f1, res)
+                current_best = best
+            
+            # Print progress
+            print(f"✅ {i+1}/{len(thresholds)}: thr={thr:.3f} → "
+                  f"F1={f1:.4f}, MCC={res['metrics']['mcc']:.4f}, "
+                  f"Acc={res['metrics']['accuracy']:.4f}")
+            
+            # Auto-save every 3 thresholds
+            if (i + 1) % 3 == 0 or (i + 1) == len(thresholds):
+                save_data = {
+                    'current_best': current_best,
+                    'completed_results': completed_results,
+                    'sweep_config': {
+                        'thr_min': thr_min,
+                        'thr_max': thr_max,
+                        'steps': steps
+                    }
+                }
+                with open(PROGRESS_FILE, "wb") as f:
+                    pickle.dump(save_data, f)
+                print(f"💾 Auto-saved at {i+1}/{len(thresholds)}")
+                
+        except Exception as e:
+            print(f"❌ Error at threshold {thr:.3f}: {e}")
+            continue
 
-        if not quiet:
-            print(f"THR={t:6.3f} → F1={m['f1']:.4f}  Acc={m['accuracy']:.4f}  "
-                  f"P={m['precision']:.4f} R={m['recall']:.4f}  "
-                  f"Spec={m['specificity']:.4f}  n={res['n']}")
+    # Clean up progress file if completed
+    if len(completed_results) == len(thresholds):
+        try:
+            Path(PROGRESS_FILE).unlink()
+            print("🧹 Cleaned up progress file (completed)")
+        except:
+            pass
+    
+    return best, completed_results
 
-    if not results:
-        if not quiet:
-            print("No results computed (check dataset / paths).")
-        return None, None
 
-    best_t, best_f1, best_res = max(results, key=lambda x: x[1])
+# ==========================================================
+# ANALYSIS FUNCTIONS
+# ==========================================================
 
-    if not quiet:
-        print("\n================== BEST BINARY THRESHOLD ==================")
-        print(f"Best Threshold : {best_t:.4f}")
-        m = best_res["metrics"]
-        print(f"F1@best        : {m['f1']:.4f}")
-        print(f"Accuracy@best  : {m['accuracy']:.4f}")
-        print(f"Precision@best : {m['precision']:.4f}")
-        print(f"Recall@best    : {m['recall']:.4f}")
-        print(f"Specificity@best: {m['specificity']:.4f}")
-        print(f"TP={best_res['TP']} FP={best_res['FP']} FN={best_res['FN']} TN={best_res['TN']}  n={best_res['n']}")
-        print("===========================================================")
+def analyze_saved_results():
+    """Analyze saved results without running the sweep"""
+    try:
+        with open(PROGRESS_FILE, "rb") as f:
+            data = pickle.load(f)
+        
+        print(f"\n{'='*60}")
+        print("📊 SAVED RESULTS ANALYSIS")
+        print(f"{'='*60}")
+        print(f"Completed: {len(data['completed_results'])} thresholds")
+        
+        if data['current_best']:
+            thr, f1, res = data['current_best']
+            print(f"\n🏆 BEST RESULT:")
+            print(f"   Threshold: {thr:.3f}")
+            for metric, value in res['metrics'].items():
+                print(f"   {metric.capitalize():<18}: {value:.4f}")
+        
+        print(f"\n📈 All Results (F1 & MCC):")
+        for result in data['completed_results']:
+            print(f"   thr={result['threshold']:.3f} → "
+                  f"F1={result['metrics']['f1']:.4f}, "
+                  f"MCC={result['metrics']['mcc']:.4f}")
+                  
+    except FileNotFoundError:
+        print("❌ No saved progress file found")
 
-    return best_t, best_res
 
-# ======================================================
-# MAIN ENTRY (no CLI flags)
-# ======================================================
+# ==========================================================
+# MAIN
+# ==========================================================
 
 if __name__ == "__main__":
+    # Check if user wants to just analyze saved results
+    if len(sys.argv) > 1 and sys.argv[1] == "analyze":
+        analyze_saved_results()
+        sys.exit(0)
+    
+    dataset = preload_dataset(
+        sample_limit=SWEEP_SAMPLE_LIMIT if RUN_SWEEP else SINGLE_SAMPLE_LIMIT,
+        quiet=QUIET
+    )
+
     if RUN_SWEEP:
-        sweep_threshold_binary(
+        print("🚀 Starting threshold sweep with emergency saving...")
+        print("💡 Press Ctrl+C at any time to save progress and exit!")
+        print("💡 Run 'python script.py analyze' to view saved results without running\n")
+        
+        best, all_results = sweep_threshold_binary_fast(
+            dataset,
             thr_min=SWEEP_THR_MIN,
             thr_max=SWEEP_THR_MAX,
             steps=SWEEP_STEPS,
-            sample_limit=SWEEP_SAMPLE_LIMIT,
-            quiet=QUIET,
+            quiet=QUIET
         )
+        
+        if best:
+            best_thr, best_f1, best_res = best
+            print(f"\n🎉 FINAL BEST THRESHOLD: {best_thr:.3f}")
+            print("📊 Final Metrics:")
+            for metric, value in best_res["metrics"].items():
+                print(f"   {metric.capitalize():<18}: {value:.4f}")
+
     else:
-        evaluate_binary(
+        res = evaluate_binary_fast(
+            dataset,
             threshold=SINGLE_EVAL_THRESHOLD,
-            sample_limit=SINGLE_SAMPLE_LIMIT,
             out_csv=SINGLE_OUT_CSV,
-            quiet=QUIET,
+            quiet=QUIET
         )
+        print(res["metrics"])

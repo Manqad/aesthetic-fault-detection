@@ -12,8 +12,8 @@ from tqdm import tqdm
 # --------------------------------------------------------------
 # CONFIG
 # --------------------------------------------------------------
-IMG_SIZE = 512
-CORESET_CAP = 60000       # maximum patches to keep in memory bank
+IMG_SIZE = 1024
+CORESET_CAP = 90000       # maximum patches to keep in memory bank
 BATCH_SIZE = 4
 
 # --------------------------------------------------------------

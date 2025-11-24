@@ -10,13 +10,13 @@ import test as test_mod  # for toggles like SAVED_CATEGORIES if needed
 # --------------------------------------------------------------
 # FIXED PATHS / DATA SCOPE (edit here if your layout changes)
 # --------------------------------------------------------------
-BASE_DIR        = Path("D:/fyp/aesthetic-fault-detection/acpart2")
-MEMORY_BANK_DIR = Path("D:/fyp/aesthetic-fault-detection/models")
-ANNOTATIONS_DIR = Path("D:/fyp/aesthetic-fault-detection/annotations")
+BASE_DIR        = Path("C:/Users/mr08456/Desktop/fyp/aesthetic-fault-detection/acpart2")
+MEMORY_BANK_DIR = Path("C:/Users/mr08456/Desktop/fyp/aesthetic-fault-detection/models")
+ANNOTATIONS_DIR = Path("C:/Users/mr08456/Desktop/fyp/aesthetic-fault-detection/annotations")
 
-ANGLES = ["0"]                    # degree sign removed everywhere
-SIDES  = ["back"]               # e.g., ["front","back"]
-BAD_CATS = ["bad1", "bad2", "bad3"]
+ANGLES = ["0","45upright"]                    # degree sign removed everywhere
+SIDES  = ["front","back","side2"]               # e.g., ["front","back"]
+BAD_CATS = ["bad1", "bad2", "bad3", "badgood"]
 
 # --------------------------------------------------------------
 # XML LOADER

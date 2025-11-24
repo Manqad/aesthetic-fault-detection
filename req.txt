@@ -1,0 +1,28 @@
+# Core DL & Feature Extraction
+torch>=2.1,<2.4
+torchvision>=0.16,<0.19
+
+# Standard scientific libraries
+numpy>=1.24
+scipy
+scikit-learn
+pillow>=9.0
+tqdm
+matplotlib
+pandas
+
+# Image/Video processing
+opencv-python>=4.7
+rembg>=2.0          # optional foreground removal
+onnxruntime>=1.17,<1.25
+
+# XML / Parsing
+lxml
+beautifulsoup4
+
+# Utilities
+pyyaml
+typing_extensions
+
+# For your scripts (threshold sweeps, plots, CSVs…)
+seaborn

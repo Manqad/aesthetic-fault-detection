@@ -21,8 +21,8 @@ except Exception:
 # --------------------------------------------------------------
 # CONFIG
 # --------------------------------------------------------------
-IMG_SIZE = 512
-ANOMALY_THRESHOLD = 4.84  # tune higher to reduce FPs, lower to catch more
+IMG_SIZE = 1024
+ANOMALY_THRESHOLD = 4.25  # tune higher to reduce FPs, lower to catch more
 
 # Component post-processing
 MIN_BOX_W = 6
@@ -38,7 +38,7 @@ BACKGROUND_REMOVAL = True       # uses rembg alpha; if rembg missing -> full FG
 BG_ERODE = 1
 BG_DILATE = 1
 
-COMPARISON_DIR = Path("d:/fyp/aesthetic-fault-detection/comparisons")
+COMPARISON_DIR = Path(r'C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons')
 COMPARISON_DIR.mkdir(exist_ok=True)
 SAVED_CATEGORIES = {"bad1": False, "bad2": False, "bad3": False}
 
@@ -46,7 +46,6 @@ SAVED_CATEGORIES = {"bad1": False, "bad2": False, "bad3": False}
 # Utilities
 # --------------------------------------------------------------
 def nms_xyxy(boxes, scores, iou_thr=0.3):
-    """Non-maximum suppression for (x1,y1,x2,y2)."""
     if len(boxes) == 0:
         return []
     boxes = np.array(boxes, dtype=np.float32)
@@ -79,7 +78,6 @@ def box_mean_score(score_map, x1, y1, x2, y2):
     return float(crop.mean())
 
 def load_xml_boxes(xml_path: Path):
-    """Return dict: name -> list of [x,y,w,h]."""
     tree = ET.parse(xml_path)
     root = tree.getroot()
     ann = {}
@@ -96,14 +94,13 @@ def load_xml_boxes(xml_path: Path):
     return ann
 
 def make_foreground_mask(pil_rgb: Image.Image) -> np.ndarray:
-    """Return 255=FG, 0=BG. If rembg missing, return full-ones mask."""
     if not BACKGROUND_REMOVAL or not _HAS_REMBG:
         if BACKGROUND_REMOVAL and not _HAS_REMBG:
             print("[WARN] BACKGROUND_REMOVAL=True but rembg not available. Proceeding without masking.")
         w, h = pil_rgb.size
         return np.ones((h, w), dtype=np.uint8) * 255
     rgba = pil_rgb.convert("RGBA")
-    rgba_removed = rembg_remove(rgba)  # RGBA with alpha
+    rgba_removed = rembg_remove(rgba)
     alpha = np.array(rgba_removed)[:, :, 3]
     if BG_ERODE > 0 or BG_DILATE > 0:
         k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
@@ -114,7 +111,7 @@ def make_foreground_mask(pil_rgb: Image.Image) -> np.ndarray:
     return alpha
 
 # --------------------------------------------------------------
-# PatchCore Inference (unchanged)
+# PatchCore Inference
 # --------------------------------------------------------------
 class PatchCoreInference(nn.Module):
     def __init__(self):
@@ -123,20 +120,23 @@ class PatchCoreInference(nn.Module):
         self.backbone.eval()
         for p in self.backbone.parameters():
             p.requires_grad = False
+
+        # Your custom truncation
         self.layer2 = nn.Sequential(*list(self.backbone.children())[:6])
         self.layer3 = nn.Sequential(*list(self.backbone.children())[:7])
-        self.memory_bank = None  # [M,1536] or [N,4096,1536]
+        self.memory_bank = None
 
     def extract_features(self, x):
         x2 = self.layer2(x)
         x3 = self.layer3(x)
         x3 = F.interpolate(x3, size=x2.shape[2:], mode='bilinear', align_corners=False)
+
         feats = []
         for feat in [x2, x3]:
             b, c, h, w = feat.shape
             feat = feat.view(b, c, h*w).permute(0, 2, 1)
             feats.append(feat)
-        return torch.cat(feats, dim=2)  # [B, 4096, 1536]
+        return torch.cat(feats, dim=2)
 
     def compute_anomaly_score(self, features, device, chunk=8192):
         if self.memory_bank is None:
@@ -145,19 +145,19 @@ class PatchCoreInference(nn.Module):
         if bank.dim() == 3:
             bank = bank.view(-1, bank.size(-1))
         bank = bank.float().cpu()
-        feat = features.view(-1, features.size(-1)).float().cpu()  # [4096,1536]
+        feat = features.view(-1, features.size(-1)).float().cpu()
         mins = []
         for i in range(0, feat.size(0), chunk):
             f = feat[i:i+chunk]
             d = torch.cdist(f, bank, p=2)
             mins.append(d.min(dim=1).values)
-        return torch.cat(mins, dim=0)  # [4096] CPU
+        return torch.cat(mins, dim=0)
 
     def forward(self, x):
         return self.extract_features(x)
 
 # --------------------------------------------------------------
-# SAVE COMPARISON (unchanged)
+# SAVE COMPARISON
 # --------------------------------------------------------------
 def save_comparison(img_pred, img_gt, img_name, cat):
     comparison = np.hstack([img_pred, img_gt])
@@ -166,32 +166,23 @@ def save_comparison(img_pred, img_gt, img_name, cat):
     print(f"  SAVED: {save_path}")
 
 # --------------------------------------------------------------
-# DETECT ANOMALIES (unchanged; box logic intact)
+# DETECT ANOMALIES
 # --------------------------------------------------------------
 def detect_anomalies(img_path: str, memory_bank_path: str, gt_boxes: list, cat: str):
-    """
-    Returns:
-        img_pred: RGB np.array with predicted boxes (green)
-        pred_boxes_eval: list of [x,y,w,h]
-        score_map: raw distance map resized to original image size
-    """
     global SAVED_CATEGORIES
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = PatchCoreInference().to(device)
     model.eval()
 
-    # Load memory bank safely (tensor-only)
     model.memory_bank = torch.load(memory_bank_path, map_location="cpu", weights_only=True)
     if model.memory_bank.dim() == 3:
         model.memory_bank = model.memory_bank.view(-1, model.memory_bank.size(-1))
 
-    # Image + FG mask
     pil_rgb = Image.open(img_path).convert("RGB")
     orig_w, orig_h = pil_rgb.size
     fg_mask = make_foreground_mask(pil_rgb)
     fg_mask_bool = (fg_mask > 0).astype(np.uint8)
 
-    # Backbone preprocess
     tf = transforms.Compose([
         transforms.Resize((IMG_SIZE, IMG_SIZE)),
         transforms.ToTensor(),
@@ -200,25 +191,29 @@ def detect_anomalies(img_path: str, memory_bank_path: str, gt_boxes: list, cat: 
     ])
     tensor = tf(pil_rgb).unsqueeze(0).to(device)
 
-    # Extract + score
     with torch.no_grad():
-        features = model(tensor)                     # [1,4096,1536]
+        features = model(tensor)
         anomaly_scores = model.compute_anomaly_score(features, device).numpy()
 
-    # RAW distance map → resize back
-    score_map = anomaly_scores.reshape(64, 64)
+    # ----------------------------------------------------------
+    # FIXED: auto-detect patchmap size (no longer hard-coded 64)
+    # ----------------------------------------------------------
+    N = len(anomaly_scores)
+    side = int(np.sqrt(N))
+    if side * side != N:
+        raise ValueError(f"[ERROR] Unexpected anomaly_scores size {N}. Cannot reshape into square.")
+    score_map = anomaly_scores.reshape(side, side)
+    # ----------------------------------------------------------
+
     score_map = cv2.resize(score_map, (orig_w, orig_h), interpolation=cv2.INTER_LINEAR)
 
-    # FG-masked thresholding
     masked_score = score_map.copy()
     masked_score[fg_mask_bool == 0] = 0.0
     binary = (masked_score > ANOMALY_THRESHOLD).astype(np.uint8) * 255
 
-    # Morphology
     k5 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
     binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, k5)
 
-    # Connected components → boxes
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(binary, connectivity=8)
     kept_xyxy, kept_scores = [], []
     for lbl in range(1, num_labels):
@@ -238,14 +233,11 @@ def detect_anomalies(img_path: str, memory_bank_path: str, gt_boxes: list, cat: 
         kept_xyxy.append([x1_t, y1_t, x2_t, y2_t])
         kept_scores.append(m)
 
-    # NMS
     keep_idx = nms_xyxy(kept_xyxy, kept_scores, iou_thr=NMS_IOU)
     pred_boxes_xyxy = [kept_xyxy[i] for i in keep_idx]
 
-    # Convert to (x,y,w,h) for evaluation (keep your +1 convention)
     pred_boxes_eval = [[x1, y1, (x2 - x1 + 1), (y2 - y1 + 1)] for (x1, y1, x2, y2) in pred_boxes_xyxy]
 
-    # Draw (unchanged)
     img_pred = np.array(pil_rgb)
     for (x1, y1, x2, y2) in pred_boxes_xyxy:
         cv2.rectangle(img_pred, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 3)

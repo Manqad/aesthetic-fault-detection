@@ -93,3 +93,87 @@ THR= 6.76 → IoU-F1= 0.114 | Area-F1= 0.114 | Group-F1= 0.114 | Overall= 0.114 
 THR= 6.84 → IoU-F1= 0.114 | Area-F1= 0.114 | Group-F1= 0.114 | Overall= 0.114 (132 imgs)
 THR= 6.92 → IoU-F1= 0.114 | Area-F1= 0.114 | Group-F1= 0.114 | Overall= 0.114 (132 imgs)
 THR= 7.00 → IoU-F1= 0.114 | Area-F1= 0.114 | Group-F1= 0.114 | Overall= 0.114 (132 imgs)
+
+
+
+binary thresholding
+code paused because declining scores
+(.venv) PS C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection> python .\binary_eval.py
+  0%|                                                                                                                                                                                              | 0/40 [00:00<?, ?it/s]  SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpgthr=3.000 → F1=0.8696, Acc=0.7692
+  2%|████▎                                                                                                                                                                        | 1/40 [3:45:50<146:48:07, 13550.97s/it]  SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpgthr=3.103 → F1=0.8696, Acc=0.7692
+  5%|████████▋                                                                                                                                                                     | 2/40 [5:43:26<102:42:13, 9729.84s/it]  SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpgthr=3.205 → F1=0.8696, Acc=0.7692
+  8%|█████████████▏                                                                                                                                                                 | 3/40 [7:27:52<83:44:51, 8148.42s/it]  SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpgthr=3.308 → F1=0.8726, Acc=0.7754
+ 10%|█████████████████▌                                                                                                                                                             | 4/40 [9:02:47<71:47:49, 7179.71s/it]  SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpgthr=3.410 → F1=0.8741, Acc=0.7785
+ 12%|█████████████████████▊                                                                                                                                                        | 5/40 [10:38:44<64:48:51, 6666.61s/it]  SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpgthr=3.513 → F1=0.8803, Acc=0.7908
+ 15%|██████████████████████████                                                                                                                                                    | 6/40 [12:17:58<60:40:27, 6424.35s/it]  SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpgthr=3.615 → F1=0.8945, Acc=0.8185 18%|██████████████████████████████▍                                                                                                                                               | 7/40 [14:03:14<58:34:00, 6389.10s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=3.718 → F1=0.9009, Acc=0.8308
+ 20%|██████████████████████████████████▊                                                                                                                                           | 8/40 [15:51:49<57:08:53, 6429.16s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=3.821 → F1=0.9174, Acc=0.8615
+ 22%|███████████████████████████████████████▏                                                                                                                                      | 9/40 [17:32:12<54:16:03, 6302.06s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=3.923 → F1=0.9381, Acc=0.8985
+ 25%|███████████████████████████████████████████▎                                                                                                                                 | 10/40 [19:16:54<52:28:02, 6296.10s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=4.026 → F1=0.9615, Acc=0.9385
+ 28%|███████████████████████████████████████████████▌                                                                                                                             | 11/40 [20:58:18<50:11:40, 6231.06s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=4.128 → F1=0.9746, Acc=0.9600
+ 30%|███████████████████████████████████████████████████▉                                                                                                                         | 12/40 [22:25:43<46:07:48, 5931.02s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=4.231 → F1=0.9880, Acc=0.9815
+ 32%|████████████████████████████████████████████████████████▏                                                                                                                    | 13/40 [23:52:31<42:50:25, 5712.06s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=4.333 → F1=0.9840, Acc=0.9754
+ 35%|████████████████████████████████████████████████████████████▌                                                                                                                | 14/40 [25:22:59<40:38:05, 5626.35s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=4.436 → F1=0.9779, Acc=0.9662
+ 38%|████████████████████████████████████████████████████████████████▉                                                                                                            | 15/40 [26:48:16<38:00:19, 5472.79s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=4.538 → F1=0.9675, Acc=0.9508
+ 40%|█████████████████████████████████████████████████████████████████████▏                                                                                                       | 16/40 [28:11:47<35:33:27, 5333.65s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=4.641 → F1=0.9526, Acc=0.9292
+ 42%|█████████████████████████████████████████████████████████████████████████▌                                                                                                   | 17/40 [29:46:37<34:45:40, 5440.88s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=4.744 → F1=0.9370, Acc=0.9077
+ 45%|█████████████████████████████████████████████████████████████████████████████▊                                                                                               | 18/40 [31:18:11<33:20:48, 5456.77s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=4.846 → F1=0.9067, Acc=0.8677
+ 48%|██████████████████████████████████████████████████████████████████████████████████▏                                                                                          | 19/40 [32:54:45<32:25:19, 5558.06s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=4.949 → F1=0.8674, Acc=0.8185
+ 50%|██████████████████████████████████████████████████████████████████████████████████████▌                                                                                      | 20/40 [34:34:48<31:37:15, 5691.76s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=5.051 → F1=0.8298, Acc=0.7754
+ 52%|██████████████████████████████████████████████████████████████████████████████████████████▊                                                                                  | 21/40 [36:12:42<30:19:40, 5746.34s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=5.154 → F1=0.8095, Acc=0.7538
+ 55%|███████████████████████████████████████████████████████████████████████████████████████████████▏                                                                             | 22/40 [37:59:37<29:44:04, 5946.94s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=5.256 → F1=0.7952, Acc=0.7385
+ 57%|███████████████████████████████████████████████████████████████████████████████████████████████████▍                                                                         | 23/40 [39:41:38<28:19:48, 5999.30s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=5.359 → F1=0.7805, Acc=0.7231
+ 60%|███████████████████████████████████████████████████████████████████████████████████████████████████████▊                                                                     | 24/40 [41:18:44<26:25:58, 5947.40s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=5.462 → F1=0.7342, Acc=0.6769
+ 62%|████████████████████████████████████████████████████████████████████████████████████████████████████████████▏                                                                | 25/40 [42:55:27<24:35:58, 5903.87s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=5.564 → F1=0.6945, Acc=0.6400
+ 65%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████▍                                                            | 26/40 [44:30:01<22:41:30, 5835.00s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=5.667 → F1=0.6450, Acc=0.5969
+ 68%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▊                                                        | 27/40 [46:15:23<21:35:52, 5981.00s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+thr=5.769 → F1=0.5591, Acc=0.5292
+ 70%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                                                    | 28/40 [47:46:32<19:25:28, 5827.41s/it] 
+ SAVED: C:\Users\mr08456\Desktop\fyp\aesthetic-fault-detection\comparisons\comparison_badgood_1.jpg
+
+
+
+ 
+
+ at 4.25 binary 
+ {'accuracy': 0.9784615384615385, 'precision': 0.9840637450199203, 'recall': 0.988, 'f1': 0.9860279441117764, 'specificity': 0.9466666666666667, 'balanced_accuracy': 0.9673333333333334, 'mcc': 0.9390844948423936}
