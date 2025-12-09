@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.transforms as transforms
-from torchvision.models import wide_resnet50_2, Wide_ResNet50_2_Weights
+from torchvision.models import wide_resnet101_2, Wide_ResNet101_2_Weights
 from PIL import Image
 from pathlib import Path
 import numpy as np
@@ -13,7 +13,7 @@ from tqdm import tqdm
 # CONFIG
 # --------------------------------------------------------------
 IMG_SIZE = 1024
-CORESET_CAP = 90000       # maximum patches to keep in memory bank
+CORESET_CAP = 200000       # maximum patches to keep in memory bank
 BATCH_SIZE = 4
 
 # --------------------------------------------------------------
@@ -22,7 +22,7 @@ BATCH_SIZE = 4
 class PatchCoreTrainer(nn.Module):
     def __init__(self):
         super().__init__()
-        self.backbone = wide_resnet50_2(weights=Wide_ResNet50_2_Weights.IMAGENET1K_V1)
+        self.backbone = wide_resnet101_2(weights=Wide_ResNet101_2_Weights.IMAGENET1K_V1)
         self.backbone.eval()
         for p in self.backbone.parameters():
             p.requires_grad = False

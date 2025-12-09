@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.transforms as transforms
-from torchvision.models import wide_resnet50_2, Wide_ResNet50_2_Weights
+from torchvision.models import wide_resnet101_2, Wide_ResNet101_2_Weights
 from PIL import Image
 import numpy as np
 import cv2
@@ -116,7 +116,7 @@ def make_foreground_mask(pil_rgb: Image.Image) -> np.ndarray:
 class PatchCoreInference(nn.Module):
     def __init__(self):
         super().__init__()
-        self.backbone = wide_resnet50_2(weights=Wide_ResNet50_2_Weights.IMAGENET1K_V1)
+        self.backbone = wide_resnet101_2(weights=Wide_ResNet101_2_Weights.IMAGENET1K_V1)
         self.backbone.eval()
         for p in self.backbone.parameters():
             p.requires_grad = False
@@ -150,7 +150,9 @@ class PatchCoreInference(nn.Module):
         for i in range(0, feat.size(0), chunk):
             f = feat[i:i+chunk]
             d = torch.cdist(f, bank, p=2)
-            mins.append(d.min(dim=1).values)
+            # Use k=9 for robustness (k-NN)
+            vals, _ = d.topk(k=9, dim=1, largest=False)
+            mins.append(vals.mean(dim=1))
         return torch.cat(mins, dim=0)
 
     def forward(self, x):

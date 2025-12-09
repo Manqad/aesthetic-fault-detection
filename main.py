@@ -14,8 +14,8 @@ BASE_DIR        = Path("C:/Users/mr08456/Desktop/fyp/aesthetic-fault-detection/a
 MEMORY_BANK_DIR = Path("C:/Users/mr08456/Desktop/fyp/aesthetic-fault-detection/models")
 ANNOTATIONS_DIR = Path("C:/Users/mr08456/Desktop/fyp/aesthetic-fault-detection/annotations")
 
-ANGLES = ["universal"]                    # degree sign removed everywhere
-SIDES  = ["good"]               # e.g., ["front","back"]
+ANGLES = ["0","45flipped","45upright"]                    # degree sign removed everywhere
+SIDES  = ["front","back","side1","side2"]               # e.g., ["front","back"]
 BAD_CATS = ["bad1", "bad2", "bad3", "badgood"]
 
 # --------------------------------------------------------------
@@ -239,3 +239,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
