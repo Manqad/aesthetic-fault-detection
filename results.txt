@@ -177,3 +177,30 @@ thr=5.769 → F1=0.5591, Acc=0.5292
 
  at 4.25 binary 
  {'accuracy': 0.9784615384615385, 'precision': 0.9840637450199203, 'recall': 0.988, 'f1': 0.9860279441117764, 'specificity': 0.9466666666666667, 'balanced_accuracy': 0.9673333333333334, 'mcc': 0.9390844948423936}
+
+----------------------------------------------------
+---------------------------------------------------
+
+
+============================================================
+EVALUATION RESULTS
+============================================================
+Threshold: 4.25
+Total Images: 325
+Comparison Images Saved: 325
+Mismatched Images: 6
+
+Confusion Matrix:
+  True Positives:  250
+  False Positives: 6
+  False Negatives: 0
+  True Negatives:  69
+
+Metrics:
+  Accuracy          : 0.9815 (Correctness of all predictions made)
+  Precision         : 0.9766 (Trustworthiness of faulty predictions)
+  Recall            : 1.0000 (Ability to catch all faults)
+  F1                : 0.9881 (Balance between precision and recall)
+  Specificity       : 0.9200 (Ability to ignore good parts)
+  Balanced_accuracy : 0.9600 (Average of recall and specificity)
+  Mcc               : 0.9479 (Correlation between prediction and truth)
