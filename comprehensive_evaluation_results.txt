@@ -1,0 +1,29 @@
+COMPREHENSIVE EVALUATION RESULTS
+================================================================================
+Metric          Config A (Indiv..  Config B (2-Ang..  Config C (3-Ang.. 
+---------------------------------------------------------------------------
+Accuracy        0.9542             0.9708             1.0000            
+F1              0.9765             0.9852             1.0000            
+Specificity     0.0000             0.0000             0.0000            
+Recall          0.9542             0.9708             1.0000            
+Precision       1.0000             1.0000             1.0000            
+MCC             0.0000             0.0000             0.0000            
+---------------------------------------------------------------------------
+Evaluated       240                240                240               
+================================================================================
+
+RAW COUNTS
+----------------------------------------
+Config A (Individual):
+  TP=229, FP=0, FN=11, TN=0
+Config B (2-Angle Combined + Fallback):
+  TP=233, FP=0, FN=7, TN=0
+Config C (3-Angle Combined):
+  TP=240, FP=0, FN=0, TN=0
+
+TIMING LOG
+----------------------------------------
+Config A (Individual): Train=2007.14s, Eval=6127.53s
+Config B (2-Angle Combined + Fallback): Train=1192.33s, Eval=6124.41s
+Config C (3-Angle Combined): Train=1959.84s, Eval=5888.45s
+Overall Script Time: 23299.94s
