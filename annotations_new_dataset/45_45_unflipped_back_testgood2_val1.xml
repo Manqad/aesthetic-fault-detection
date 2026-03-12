@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <created>2026-02-10 01:46:03.373189</created>
+      <labels>
+        <label>
+          <name text="anomaly" />
+        </label>
+      </labels>
+    </job>
+  </meta>
+  <image id="15" name="img_20260205_181205_good2.png" width="5472" height="3648" />
+  <image id="16" name="img_20260205_181250_good2.png" width="5472" height="3648" />
+  <image id="17" name="img_20260205_181255_good2.png" width="5472" height="3648" />
+  <image id="18" name="img_20260205_181418_good2.png" width="5472" height="3648" />
+  <image id="19" name="img_20260205_181436_good2.png" width="5472" height="3648" />
+  <image id="20" name="img_20260205_181440_good2.png" width="5472" height="3648" />
+  <image id="21" name="img_20260205_181442_good2.png" width="5472" height="3648" />
+  <image id="22" name="img_20260205_181451_good2.png" width="5472" height="3648" />
+  <image id="23" name="img_20260205_181509_good2.png" width="5472" height="3648" />
+  <image id="24" name="img_20260205_181513_good2.png" width="5472" height="3648" />
+  <image id="25" name="img_20260205_181516_good2.png" width="5472" height="3648" />
+  <image id="26" name="img_20260205_181527_good2.png" width="5472" height="3648" />
+  <image id="27" name="img_20260205_181529_good2.png" width="5472" height="3648" />
+  <image id="28" name="img_20260205_181533_good2.png" width="5472" height="3648" />
+  <image id="29" name="img_20260205_181535_good2.png" width="5472" height="3648" />
+</annotations>

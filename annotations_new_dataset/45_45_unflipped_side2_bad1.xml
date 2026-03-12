@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <created>2026-02-10 11:51:19.997127</created>
+      <labels>
+        <label>
+          <name text="anomaly" />
+        </label>
+      </labels>
+    </job>
+  </meta>
+  <image id="0" name="img_20260205_184907.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3402.00" ytl="2734.00" xbr="3648.00" ybr="2838.00" z_order="0" />
+  </image>
+  <image id="1" name="img_20260205_184908.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3265.00" ytl="830.00" xbr="3520.00" ybr="958.00" z_order="0" />
+  </image>
+</annotations>

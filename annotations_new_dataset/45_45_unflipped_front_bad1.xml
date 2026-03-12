@@ -1,0 +1,197 @@
+<?xml version='1.0' encoding='utf-8'?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <created>2026-02-10 11:24:50.751209</created>
+      <labels>
+        <label>
+          <name text="anomaly" />
+        </label>
+      </labels>
+    </job>
+  </meta>
+  <image id="0" name="img_20260205_183813.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2697.00" ytl="2629.00" xbr="2953.00" ybr="2822.00" z_order="0" />
+  </image>
+  <image id="1" name="img_20260205_183815.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1486.00" ytl="2112.00" xbr="1601.00" ybr="2229.00" z_order="0" />
+  </image>
+  <image id="2" name="img_20260205_183816.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1185.00" ytl="2618.00" xbr="1287.00" ybr="2767.00" z_order="0" />
+  </image>
+  <image id="3" name="img_20260205_183817.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1602.00" ytl="1142.00" xbr="1813.00" ybr="1291.00" z_order="0" />
+  </image>
+  <image id="4" name="img_20260205_183818.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2218.00" ytl="2749.00" xbr="2481.00" ybr="2864.00" z_order="0" />
+  </image>
+  <image id="5" name="img_20260205_183821.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2176.00" ytl="842.00" xbr="2293.00" ybr="949.00" z_order="0" />
+  </image>
+  <image id="6" name="img_20260205_183823.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3755.00" ytl="2113.00" xbr="4003.00" ybr="2374.00" z_order="0" />
+  </image>
+  <image id="7" name="img_20260205_183825.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3119.00" ytl="786.00" xbr="3301.00" ybr="954.00" z_order="0" />
+  </image>
+  <image id="8" name="img_20260205_183826.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="4143.00" ytl="1493.00" xbr="4354.00" ybr="1609.00" z_order="0" />
+  </image>
+  <image id="9" name="img_20260205_183828.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3816.00" ytl="1306.00" xbr="4066.00" ybr="1423.00" z_order="0" />
+  </image>
+  <image id="10" name="img_20260205_183829.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2107.00" ytl="1594.00" xbr="2331.00" ybr="1709.00" z_order="0" />
+  </image>
+  <image id="11" name="img_20260205_183831.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1915.00" ytl="1016.00" xbr="2087.00" ybr="1306.00" z_order="0" />
+  </image>
+  <image id="12" name="img_20260205_183856.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3764.00" ytl="2309.00" xbr="3897.00" ybr="2577.00" z_order="0" />
+  </image>
+  <image id="13" name="img_20260205_183903.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2032.00" ytl="2574.00" xbr="2316.00" ybr="2775.00" z_order="0" />
+  </image>
+  <image id="14" name="img_20260205_183906.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2276.00" ytl="2270.00" xbr="2530.00" ybr="2492.00" z_order="0" />
+  </image>
+  <image id="15" name="img_20260205_183907.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2847.00" ytl="2121.00" xbr="3117.00" ybr="2406.00" z_order="0" />
+  </image>
+  <image id="16" name="img_20260205_183909.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2083.00" ytl="1298.00" xbr="2287.00" ybr="1485.00" z_order="0" />
+  </image>
+  <image id="17" name="img_20260205_183910.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1393.00" ytl="1013.00" xbr="1559.00" ybr="1199.00" z_order="0" />
+  </image>
+  <image id="18" name="img_20260205_183914.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="4174.00" ytl="1970.00" xbr="4382.00" ybr="2245.00" z_order="0" />
+  </image>
+  <image id="19" name="img_20260205_183915.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2427.00" ytl="1408.00" xbr="2602.00" ybr="1705.00" z_order="0" />
+  </image>
+  <image id="20" name="img_20260205_183918.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2280.00" ytl="1007.00" xbr="2478.00" ybr="1230.00" z_order="0" />
+  </image>
+  <image id="21" name="img_20260205_183919.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3600.00" ytl="2383.00" xbr="3835.00" ybr="2560.00" z_order="0" />
+  </image>
+  <image id="22" name="img_20260205_183925.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2405.00" ytl="2906.00" xbr="2698.00" ybr="3052.00" z_order="0" />
+  </image>
+  <image id="23" name="img_20260205_183931.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3555.00" ytl="2222.00" xbr="3667.00" ybr="2413.00" z_order="0" />
+  </image>
+  <image id="24" name="img_20260205_183932.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3077.00" ytl="1504.00" xbr="3219.00" ybr="1694.00" z_order="0" />
+  </image>
+  <image id="25" name="img_20260205_183938.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1170.00" ytl="2326.00" xbr="1328.00" ybr="2610.00" z_order="0" />
+  </image>
+  <image id="26" name="img_20260205_183940.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1576.00" ytl="867.00" xbr="1746.00" ybr="1050.00" z_order="0" />
+  </image>
+  <image id="27" name="img_20260205_183941.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3438.00" ytl="2191.00" xbr="3545.00" ybr="2384.00" z_order="0" />
+  </image>
+  <image id="28" name="img_20260205_183942.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3840.00" ytl="1917.00" xbr="3989.00" ybr="2193.00" z_order="0" />
+  </image>
+  <image id="29" name="img_20260205_183944.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3486.00" ytl="869.00" xbr="3760.00" ybr="1002.00" z_order="0" />
+  </image>
+  <image id="30" name="img_20260205_183945.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1986.00" ytl="1117.00" xbr="2276.00" ybr="1228.00" z_order="0" />
+  </image>
+  <image id="31" name="img_20260205_183947.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1944.00" ytl="1798.00" xbr="2131.00" ybr="1998.00" z_order="0" />
+  </image>
+  <image id="32" name="img_20260205_183948.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1613.00" ytl="947.00" xbr="1737.00" ybr="1052.00" z_order="0" />
+  </image>
+  <image id="33" name="img_20260205_183949.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3731.00" ytl="974.00" xbr="3920.00" ybr="1131.00" z_order="0" />
+  </image>
+  <image id="34" name="img_20260205_183950.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2426.00" ytl="1438.00" xbr="2653.00" ybr="1542.00" z_order="0" />
+  </image>
+  <image id="35" name="img_20260205_183951.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3395.00" ytl="1597.00" xbr="3682.00" ybr="1864.00" z_order="0" />
+  </image>
+  <image id="36" name="img_20260205_183952.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2869.00" ytl="2857.00" xbr="3025.00" ybr="3124.00" z_order="0" />
+  </image>
+  <image id="37" name="img_20260205_184000.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1168.00" ytl="773.00" xbr="1466.00" ybr="913.00" z_order="0" />
+  </image>
+  <image id="38" name="img_20260205_184001.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2287.00" ytl="2394.00" xbr="2470.00" ybr="2578.00" z_order="0" />
+  </image>
+  <image id="39" name="img_20260205_184003.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1321.00" ytl="2224.00" xbr="1541.00" ybr="2369.00" z_order="0" />
+  </image>
+  <image id="40" name="img_20260205_184006.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1695.00" ytl="2887.00" xbr="1822.00" ybr="3050.00" z_order="0" />
+  </image>
+  <image id="41" name="img_20260205_184007.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1126.00" ytl="857.00" xbr="1348.00" ybr="1028.00" z_order="0" />
+  </image>
+  <image id="42" name="img_20260205_184008.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2292.00" ytl="1185.00" xbr="2516.00" ybr="1392.00" z_order="0" />
+  </image>
+  <image id="43" name="img_20260205_184010.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3029.00" ytl="1196.00" xbr="3224.00" ybr="1300.00" z_order="0" />
+  </image>
+  <image id="44" name="img_20260205_184011.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1179.00" ytl="1449.00" xbr="1427.00" ybr="1734.00" z_order="0" />
+  </image>
+  <image id="45" name="img_20260205_184013.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1205.00" ytl="1979.00" xbr="1465.00" ybr="2270.00" z_order="0" />
+  </image>
+  <image id="46" name="img_20260205_184014.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3514.00" ytl="1153.00" xbr="3712.00" ybr="1433.00" z_order="0" />
+  </image>
+  <image id="47" name="img_20260205_184018.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3429.00" ytl="1416.00" xbr="3623.00" ybr="1610.00" z_order="0" />
+  </image>
+  <image id="48" name="img_20260205_184019.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2920.00" ytl="1974.00" xbr="3172.00" ybr="2209.00" z_order="0" />
+  </image>
+  <image id="49" name="img_20260205_184020.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1665.00" ytl="2210.00" xbr="1848.00" ybr="2376.00" z_order="0" />
+  </image>
+  <image id="50" name="img_20260205_184021.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1245.00" ytl="2005.00" xbr="1428.00" ybr="2180.00" z_order="0" />
+  </image>
+  <image id="51" name="img_20260205_184022.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2470.00" ytl="1784.00" xbr="2730.00" ybr="1992.00" z_order="0" />
+  </image>
+  <image id="52" name="img_20260205_184023.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3818.00" ytl="1312.00" xbr="4023.00" ybr="1600.00" z_order="0" />
+  </image>
+  <image id="53" name="img_20260205_184029.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2259.00" ytl="1117.00" xbr="2528.00" ybr="1388.00" z_order="0" />
+  </image>
+  <image id="54" name="img_20260205_184030.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3372.00" ytl="2237.00" xbr="3542.00" ybr="2369.00" z_order="0" />
+  </image>
+  <image id="55" name="img_20260205_184031.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1552.00" ytl="1165.00" xbr="1826.00" ybr="1350.00" z_order="0" />
+  </image>
+  <image id="56" name="img_20260205_184038.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1494.00" ytl="1464.00" xbr="1784.00" ybr="1685.00" z_order="0" />
+  </image>
+  <image id="57" name="img_20260205_184040.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="4023.00" ytl="1112.00" xbr="4202.00" ybr="1325.00" z_order="0" />
+  </image>
+  <image id="58" name="img_20260205_184041.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2887.00" ytl="1803.00" xbr="3141.00" ybr="2022.00" z_order="0" />
+  </image>
+  <image id="59" name="img_20260205_184047.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1577.00" ytl="787.00" xbr="1699.00" ybr="1045.00" z_order="0" />
+  </image>
+  <image id="60" name="img_20260205_184049.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3795.00" ytl="1232.00" xbr="3984.00" ybr="1509.00" z_order="0" />
+  </image>
+</annotations>

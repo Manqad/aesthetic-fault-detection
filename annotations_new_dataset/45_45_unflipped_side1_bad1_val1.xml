@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <created>2026-02-10 11:32:22.202651</created>
+      <labels>
+        <label>
+          <name text="anomaly" />
+        </label>
+      </labels>
+    </job>
+  </meta>
+  <image id="0" name="10.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3879.00" ytl="1821.00" xbr="4136.00" ybr="2085.00" z_order="0" />
+  </image>
+  <image id="1" name="11.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3274.00" ytl="2398.00" xbr="3547.00" ybr="2696.00" z_order="0" />
+  </image>
+  <image id="2" name="13.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3189.00" ytl="771.00" xbr="3445.00" ybr="904.00" z_order="0" />
+  </image>
+  <image id="3" name="14.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1399.00" ytl="2666.00" xbr="1667.00" ybr="2797.00" z_order="0" />
+  </image>
+  <image id="4" name="15.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2505.00" ytl="1151.00" xbr="2637.00" ybr="1387.00" z_order="0" />
+  </image>
+  <image id="5" name="17.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2215.00" ytl="2478.00" xbr="2334.00" ybr="2733.00" z_order="0" />
+  </image>
+  <image id="6" name="18.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2226.00" ytl="1545.00" xbr="2469.00" ybr="1845.00" z_order="0" />
+  </image>
+  <image id="7" name="6.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3316.00" ytl="1665.00" xbr="3615.00" ybr="1771.00" z_order="0" />
+  </image>
+  <image id="8" name="7.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1438.00" ytl="2825.00" xbr="1595.00" ybr="3009.00" z_order="0" />
+  </image>
+  <image id="9" name="8.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2603.00" ytl="1331.00" xbr="2750.00" ybr="1503.00" z_order="0" />
+  </image>
+</annotations>

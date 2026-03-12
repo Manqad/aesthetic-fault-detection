@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <created>2026-02-10 01:45:20.042217</created>
+      <labels>
+        <label>
+          <name text="anomaly" />
+        </label>
+      </labels>
+    </job>
+  </meta>
+  <image id="0" name="img_20260130_160001.png" width="5472" height="3648" />
+  <image id="1" name="img_20260130_160003.png" width="5472" height="3648" />
+  <image id="2" name="img_20260130_160005.png" width="5472" height="3648" />
+  <image id="3" name="img_20260130_160008.png" width="5472" height="3648" />
+  <image id="4" name="img_20260130_160103.png" width="5472" height="3648" />
+  <image id="5" name="img_20260130_160104.png" width="5472" height="3648" />
+  <image id="6" name="img_20260130_160719.png" width="5472" height="3648" />
+  <image id="7" name="img_20260130_160802.png" width="5472" height="3648" />
+  <image id="8" name="img_20260130_160803.png" width="5472" height="3648" />
+  <image id="9" name="img_20260130_160825.png" width="5472" height="3648" />
+  <image id="10" name="img_20260130_160826.png" width="5472" height="3648" />
+  <image id="11" name="img_20260130_160858.png" width="5472" height="3648" />
+  <image id="12" name="img_20260130_160900.png" width="5472" height="3648" />
+  <image id="13" name="img_20260130_160904.png" width="5472" height="3648" />
+  <image id="14" name="img_20260130_160915.png" width="5472" height="3648" />
+  <image id="15" name="img_20260130_160923.png" width="5472" height="3648" />
+  <image id="16" name="img_20260130_160925.png" width="5472" height="3648" />
+  <image id="17" name="img_20260130_160950.png" width="5472" height="3648" />
+  <image id="18" name="img_20260130_160951.png" width="5472" height="3648" />
+  <image id="19" name="img_20260130_160954.png" width="5472" height="3648" />
+  <image id="20" name="img_20260130_160955.png" width="5472" height="3648" />
+  <image id="21" name="img_20260130_161006.png" width="5472" height="3648" />
+  <image id="22" name="img_20260130_161016.png" width="5472" height="3648" />
+  <image id="23" name="img_20260130_161023.png" width="5472" height="3648" />
+  <image id="24" name="img_20260130_161038.png" width="5472" height="3648" />
+  <image id="25" name="img_20260130_161154.png" width="5472" height="3648" />
+  <image id="26" name="img_20260130_161155.png" width="5472" height="3648" />
+  <image id="27" name="img_20260130_161220.png" width="5472" height="3648" />
+  <image id="28" name="img_20260130_161237.png" width="5472" height="3648" />
+  <image id="29" name="img_20260130_161239.png" width="5472" height="3648" />
+</annotations>

@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <created>2026-02-10 11:11:56.869717</created>
+      <labels>
+        <label>
+          <name text="anomaly" />
+        </label>
+      </labels>
+    </job>
+  </meta>
+  <image id="0" name="img_20260205_191555.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1599.00" ytl="1349.00" xbr="1820.00" ybr="1516.00" z_order="0" />
+  </image>
+  <image id="1" name="img_20260205_191609.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3454.00" ytl="1216.00" xbr="3630.00" ybr="1388.00" z_order="0" />
+  </image>
+  <image id="2" name="img_20260205_191612.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3577.00" ytl="1082.00" xbr="3717.00" ybr="1280.00" z_order="0" />
+  </image>
+  <image id="3" name="img_20260205_191620.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="2438.00" ytl="2200.00" xbr="2553.00" ybr="2315.00" z_order="0" />
+  </image>
+  <image id="4" name="img_20260205_191623.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1266.00" ytl="1432.00" xbr="1478.00" ybr="1648.00" z_order="0" />
+  </image>
+  <image id="5" name="img_20260205_191626.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="1486.00" ytl="1768.00" xbr="1588.00" ybr="2012.00" z_order="0" />
+  </image>
+  <image id="6" name="img_20260205_191627.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3228.00" ytl="1226.00" xbr="3344.00" ybr="1339.00" z_order="0" />
+  </image>
+  <image id="7" name="img_20260205_191657.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3760.00" ytl="2012.00" xbr="3994.00" ybr="2213.00" z_order="0" />
+  </image>
+</annotations>

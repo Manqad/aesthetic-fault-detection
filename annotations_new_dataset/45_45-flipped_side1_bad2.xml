@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <created>2026-02-10 11:18:18.288307</created>
+      <labels>
+        <label>
+          <name text="anomaly" />
+        </label>
+      </labels>
+    </job>
+  </meta>
+  <image id="0" name="img_20260205_191344.jpg" width="5472" height="3648">
+    <box label="anomaly" source="manual" occluded="0" xtl="3952.00" ytl="1359.00" xbr="4062.00" ybr="1589.00" z_order="0" />
+  </image>
+</annotations>

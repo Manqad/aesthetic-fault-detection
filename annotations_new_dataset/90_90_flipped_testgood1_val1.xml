@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <job>
+      <created>2026-02-10 01:46:32.353175</created>
+      <labels>
+        <label>
+          <name text="anomaly" />
+        </label>
+      </labels>
+    </job>
+  </meta>
+  <image id="0" name="img_20260205_195745_good1.png" width="5472" height="3648" />
+  <image id="1" name="img_20260205_195750_good1.png" width="5472" height="3648" />
+  <image id="2" name="img_20260205_195754_good1.png" width="5472" height="3648" />
+  <image id="3" name="img_20260205_195819_good1.png" width="5472" height="3648" />
+  <image id="4" name="img_20260205_195826_good1.png" width="5472" height="3648" />
+  <image id="5" name="img_20260205_195853_good1.png" width="5472" height="3648" />
+  <image id="6" name="img_20260205_195906_good1.png" width="5472" height="3648" />
+  <image id="7" name="img_20260205_195914_good1.png" width="5472" height="3648" />
+  <image id="8" name="img_20260205_195920_good1.png" width="5472" height="3648" />
+  <image id="9" name="img_20260205_195934_good1.png" width="5472" height="3648" />
+</annotations>
